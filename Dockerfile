@@ -10,4 +10,7 @@ COPY target/*jar-with-dependencies.jar sd2122.jar
 # copy the file of properties to the docker image
 COPY trab.props trab.props
 
-CMD ["java", "-cp", "/home/sd/sd2122.jar", "tp1.impl.service.rest.DirectoryRestServer"]
+# copy the keystore and truststore to the docker image
+COPY *.*ks /home/sd/
+
+CMD ["java", "-cp", "/home/sd/sd2122.jar", "tp2.impl.service.rest.DirectoryRestServer"]
