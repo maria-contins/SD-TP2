@@ -36,11 +36,13 @@ abstract class SoapClient<T> extends RetryClient {
 	protected final T impl;
 	
 	public SoapClient(URI uri, Supplier<T> func) {
+
+		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
+
 		this.uri = uri;
 		this.impl = func.get();
 		this.setTimeouts((BindingProvider) impl);
 
-		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
 
 	}
 
