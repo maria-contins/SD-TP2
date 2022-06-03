@@ -22,21 +22,22 @@ public abstract class AbstractRestServer extends AbstractServer {
 
 
 	protected void start() {
-		String ip = IP.hostAddress();
-		String serverURI = String.format(SERVER_BASE_URI, ip, port);
-		ResourceConfig config = new ResourceConfig();
-		registerResources( config );
-
-
-
 		try {
-			JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, INETADDR_ANY)), config, SSLContext.getDefault());
+			String ip = IP.hostAddress();
+			String serverURI = String.format(SERVER_BASE_URI, ip, port);
+
+			ResourceConfig config = new ResourceConfig();
+			registerResources( config );
+
+			JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config, SSLContext.getDefault());
+
+			Log.info(String.format("%s Server ready @ %s\n",  service, serverURI));
+			Discovery.getInstance().announce(service, serverURI);
+
 		} catch (Exception e) {
 			System.out.println("SSL context error");
 		}
-		Log.info(String.format("%s Server ready @ %s\n",  service, serverURI));
-		Discovery.getInstance().announce(service, serverURI);
-		
+
 	}
 	
 	abstract void registerResources( ResourceConfig config );
