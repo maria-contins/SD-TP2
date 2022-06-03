@@ -58,6 +58,7 @@ util\Token.class
 tp1\impl\servers\common\JavaDirectory.class
 tp1\impl\clients\ClientFactory.class
 tp1\impl\clients\common\RetryDirectoryClient.class
+util\InsecureHostnameVerifier.class
 tp1\impl\servers\rest\FilesRestServer.class
 util\IO.class
 util\Debug.class

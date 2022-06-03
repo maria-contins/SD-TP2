@@ -13,6 +13,9 @@ import jakarta.xml.ws.WebServiceException;
 import tp1.api.service.java.Result;
 import tp1.api.service.java.Result.ErrorCode;
 import tp1.impl.clients.common.RetryClient;
+import util.InsecureHostnameVerifier;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
 * 
@@ -36,6 +39,9 @@ abstract class SoapClient<T> extends RetryClient {
 		this.uri = uri;
 		this.impl = func.get();
 		this.setTimeouts((BindingProvider) impl);
+
+		HttpsURLConnection.setDefaultHostnameVerifier(new InsecureHostnameVerifier());
+
 	}
 
 	private void setTimeouts(BindingProvider port ) {

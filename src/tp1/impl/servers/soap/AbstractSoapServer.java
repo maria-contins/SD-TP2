@@ -31,21 +31,24 @@ public class AbstractSoapServer extends AbstractServer{
 	}
 	
 	protected void start() {
-		var ip = IP.hostAddress();
-		var serverURI = String.format(SERVER_BASE_URI, ip, port);
-
 		try {
+			var ip = IP.hostAddress();
+
+			var serverURI = String.format(SERVER_BASE_URI, ip, port);
 			var server = HttpsServer.create(new InetSocketAddress(ip, port), 0);
 			server.setExecutor(Executors.newCachedThreadPool());
 			server.setHttpsConfigurator(new HttpsConfigurator(SSLContext.getDefault()));
+
+			var endpoint = Endpoint.create(implementor);
+			endpoint.publish(server.createContext("/soap"));
+
+			Discovery.getInstance().announce(service, serverURI);
+
+			Log.info(String.format("%s Soap Server ready @ %s\n", service, serverURI));
+
+			server.start();
 		} catch (Exception e) {
 			System.out.println("set error");
 		}
-
-		Endpoint.publish(serverURI.replace(ip, INETADDR_ANY), implementor );
-
-		Discovery.getInstance().announce(service, serverURI);
-
-		Log.info(String.format("%s Soap Server ready @ %s\n", service, serverURI));
 	}
 }
