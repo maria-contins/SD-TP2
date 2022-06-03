@@ -36,5 +36,5 @@ public class UsersRestServer extends AbstractRestServer {
 		Token.set( args.length == 0 ? "" : args[0] );
 		
 		new UsersRestServer().start();
-	}	
+	}
 }
