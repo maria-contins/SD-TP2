@@ -110,6 +110,6 @@ public class JavaFiles implements Files {
 
 		long hashed = (time + mySecret).hashCode();
 
-		return hashed != Long.parseLong(tokenInfo[2]);
+		return hashed != Long.parseLong(tokenInfo[1]);
 	}
 }
