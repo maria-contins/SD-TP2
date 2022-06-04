@@ -1,5 +1,6 @@
 package tp1.impl.servers.common;
 
+import static java.lang.System.currentTimeMillis;
 import static tp1.api.service.java.Result.error;
 import static tp1.api.service.java.Result.ok;
 import static tp1.api.service.java.Result.ErrorCode.BAD_REQUEST;
@@ -116,4 +117,5 @@ public class JavaUsers implements Users {
 	private boolean wrongPassword(User user, String password) {
 		return !user.getPassword().equals(password);
 	}
+
 }

@@ -4,6 +4,7 @@ import static tp1.api.service.java.Result.error;
 import static tp1.api.service.java.Result.ok;
 import static tp1.api.service.java.Result.ErrorCode.INTERNAL_ERROR;
 import static tp1.api.service.java.Result.ErrorCode.NOT_FOUND;
+import static tp1.api.service.java.Result.ErrorCode.FORBIDDEN;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
 import util.IO;
+import util.Token;
 
 public class JavaFiles implements Files {
 
@@ -25,6 +27,10 @@ public class JavaFiles implements Files {
 
 	@Override
 	public Result<byte[]> getFile(String fileId, String token) {
+
+		if(invalidToken(token))
+			return error(FORBIDDEN);
+
 		fileId = fileId.replace( DELIMITER, "/");
 		byte[] data = IO.read( new File( ROOT + fileId ));
 		return data != null ? ok( data) : error( NOT_FOUND );
@@ -32,6 +38,10 @@ public class JavaFiles implements Files {
 
 	@Override
 	public Result<Void> deleteFile(String fileId, String token) {
+
+		if(invalidToken(token))
+			return error(FORBIDDEN);
+
 		fileId = fileId.replace( DELIMITER, "/");
 		boolean res = IO.delete( new File( ROOT + fileId ));	
 		return res ? ok() : error( NOT_FOUND );
@@ -39,6 +49,10 @@ public class JavaFiles implements Files {
 
 	@Override
 	public Result<Void> writeFile(String fileId, byte[] data, String token) {
+
+		if(invalidToken(token))
+			return error(FORBIDDEN);
+
 		fileId = fileId.replace( DELIMITER, "/");
 		File file = new File(ROOT + fileId);
 		file.getParentFile().mkdirs();
@@ -48,6 +62,10 @@ public class JavaFiles implements Files {
 
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String token) {
+
+		if(invalidToken(token))
+			return error(FORBIDDEN);
+
 		File file = new File(ROOT + userId);
 		try {
 			java.nio.file.Files.walk(file.toPath())
@@ -63,5 +81,20 @@ public class JavaFiles implements Files {
 
 	public static String fileId(String filename, String userId) {
 		return userId + JavaFiles.DELIMITER + filename;
+	}
+
+	private boolean invalidToken(String token){
+		String[] tokenInfo = token.split("\\$\\$\\$");
+
+		String fileId = tokenInfo[0];
+		String time = tokenInfo[1];
+		String mySecret = Token.get();
+
+		long hashed = (fileId + time + mySecret).hashCode();
+
+		System.out.print("------------------------------" +hashed);
+		System.out.print("------------------------------" +Long.parseLong(tokenInfo[2]));
+
+		return hashed != Long.parseLong(tokenInfo[2]);
 	}
 }
