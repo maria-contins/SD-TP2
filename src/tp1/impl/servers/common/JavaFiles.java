@@ -1,5 +1,6 @@
 package tp1.impl.servers.common;
 
+import static java.lang.System.currentTimeMillis;
 import static tp1.api.service.java.Result.error;
 import static tp1.api.service.java.Result.ok;
 import static tp1.api.service.java.Result.ErrorCode.INTERNAL_ERROR;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import org.checkerframework.checker.units.qual.Current;
 import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
 import util.IO;
@@ -84,16 +86,16 @@ public class JavaFiles implements Files {
 	}
 
 	private boolean invalidToken(String token){
-		String[] tokenInfo = token.split("\\$\\$\\$");
+		String[] tokenInfo = token.split("\\?\\?");
 
 		String fileId = tokenInfo[0];
 		String time = tokenInfo[1];
 		String mySecret = Token.get();
 
-		long hashed = (fileId + time + mySecret).hashCode();
+		if (Long.parseLong(time) < currentTimeMillis())
+			return false;
 
-		System.out.print("------------------------------" +hashed);
-		System.out.print("------------------------------" +Long.parseLong(tokenInfo[2]));
+		long hashed = (fileId + time + mySecret).hashCode();
 
 		return hashed != Long.parseLong(tokenInfo[2]);
 	}

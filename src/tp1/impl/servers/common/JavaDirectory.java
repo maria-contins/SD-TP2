@@ -302,7 +302,7 @@ public class JavaDirectory implements Directory {
 	private String createToken(String fileId) {
 		String mySecret = Token.get();
 		long time = (currentTimeMillis()+3600000);
-		String clear = fileId+"$$$"+time+"$$$" ;
+		String clear = fileId+"??"+time+"??" ;
 		int hashed = (fileId+time+mySecret).hashCode();
 
 		return clear+hashed;
