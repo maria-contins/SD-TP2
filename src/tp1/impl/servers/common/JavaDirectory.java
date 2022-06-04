@@ -1,5 +1,6 @@
 package tp1.impl.servers.common;
 
+import static java.lang.System.currentTimeMillis;
 import static tp1.api.service.java.Result.error;
 import static tp1.api.service.java.Result.ok;
 import static tp1.api.service.java.Result.redirect;
@@ -10,13 +11,9 @@ import static tp1.impl.clients.Clients.FilesClients;
 import static tp1.impl.clients.Clients.UsersClients;
 
 import java.net.URI;
+import java.sql.Time;
 import java.time.Duration;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,6 +26,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import org.checkerframework.checker.units.qual.Current;
 import tp1.api.FileInfo;
 import tp1.api.User;
 import tp1.api.service.java.Directory;
@@ -76,7 +74,7 @@ public class JavaDirectory implements Directory {
 			var file = files.get(fileId);
 			var info = file != null ? file.info() : new FileInfo();
 			for (var uri :  orderCandidateFileServers(file)) {
-				var result = FilesClients.get(uri).writeFile(fileId, data, Token.get());
+				var result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
 				if (result.isOK()) {
 					info.setOwner(userId);
 					info.setFilename(filename);
@@ -115,7 +113,7 @@ public class JavaDirectory implements Directory {
 
 			executor.execute(() -> {
 				this.removeSharesOfFile(info);
-				FilesClients.get(file.uri()).deleteFile(fileId, password);
+				FilesClients.get(file.uri()).deleteFile(fileId, /*password,*/ createToken(fileId));
 			});
 			
 			getFileCounts(info.uri(), false).numFiles().decrementAndGet();
@@ -173,6 +171,7 @@ public class JavaDirectory implements Directory {
 
 	@Override
 	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
+
 		if (badParam(filename))
 			return error(BAD_REQUEST);
 
@@ -298,5 +297,14 @@ public class JavaDirectory implements Directory {
 	}	
 	
 	static record UserInfo(String userId, String password) {		
+	}
+
+	private String createToken(String fileId) {
+		String mySecret = Token.get();
+		long time = (currentTimeMillis()+3600000);
+		String clear = fileId+"$$$"+time+"$$$" ;
+		int hashed = (fileId+time+mySecret).hashCode();
+
+		return clear+hashed;
 	}
 }
