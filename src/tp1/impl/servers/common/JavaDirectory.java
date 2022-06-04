@@ -187,7 +187,7 @@ public class JavaDirectory implements Directory {
 		if (!file.info().hasAccess(accUserId))
 			return error(FORBIDDEN);
 		
-		return redirect( file.info().getFileURL() );
+		return redirect(file.info().getFileURL()); // TODO WHAT
 	}
 
 	@Override
@@ -228,6 +228,9 @@ public class JavaDirectory implements Directory {
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String password, String token) {
 		users.invalidate( new UserInfo(userId, password));
+
+		if (!validateToken(token))
+			return error(ErrorCode.FORBIDDEN);
 		
 		var fileIds = userFiles.remove(userId);
 		if (fileIds != null)
@@ -306,5 +309,19 @@ public class JavaDirectory implements Directory {
 		int hashed = (fileId+time+mySecret).hashCode();
 
 		return clear+hashed;
+	}
+
+	private boolean validateToken(String token) {
+		String[] tokenInfo = token.split("\\?\\?");
+
+		String time = tokenInfo[0];
+		String mySecret = Token.get();
+
+		if (Long.parseLong(time) < currentTimeMillis())
+			return false;
+
+		long hashed = (time + mySecret).hashCode();
+
+		return hashed != Long.parseLong(tokenInfo[2]);
 	}
 }

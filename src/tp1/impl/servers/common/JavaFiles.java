@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import org.checkerframework.checker.units.qual.Current;
 import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
 import util.IO;
@@ -30,7 +29,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<byte[]> getFile(String fileId, String token) {
 
-		if(invalidToken(token))
+		if(invalidTokenDir(token))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -41,7 +40,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<Void> deleteFile(String fileId, String token) {
 
-		if(invalidToken(token))
+		if(invalidTokenDir(token))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -52,7 +51,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<Void> writeFile(String fileId, byte[] data, String token) {
 
-		if(invalidToken(token))
+		if(invalidTokenDir(token))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -65,7 +64,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String token) {
 
-		if(invalidToken(token))
+		if(invalidTokenUsers(token))
 			return error(FORBIDDEN);
 
 		File file = new File(ROOT + userId);
@@ -85,7 +84,7 @@ public class JavaFiles implements Files {
 		return userId + JavaFiles.DELIMITER + filename;
 	}
 
-	private boolean invalidToken(String token){
+	private boolean invalidTokenDir(String token){
 		String[] tokenInfo = token.split("\\?\\?");
 
 		String fileId = tokenInfo[0];
@@ -96,6 +95,20 @@ public class JavaFiles implements Files {
 			return false;
 
 		long hashed = (fileId + time + mySecret).hashCode();
+
+		return hashed != Long.parseLong(tokenInfo[2]);
+	}
+
+	private boolean invalidTokenUsers(String token) {
+		String[] tokenInfo = token.split("\\?\\?");
+
+		String time = tokenInfo[0];
+		String mySecret = Token.get();
+
+		if (Long.parseLong(time) < currentTimeMillis())
+			return false;
+
+		long hashed = (time + mySecret).hashCode();
 
 		return hashed != Long.parseLong(tokenInfo[2]);
 	}
