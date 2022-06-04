@@ -1,13 +1,12 @@
 package tp1.impl.servers.rest;
 
-import tp1.api.service.java.Files;
 import tp1.api.service.rest.RestFiles;
 import tp1.impl.servers.common.JavaProxy;
 
 import java.util.logging.Logger;
 
 public class ProxyResources extends RestResource implements RestFiles {
-    private static Logger Log = Logger.getLogger(FilesResources.class.getName());
+    private static Logger Log = Logger.getLogger(ProxyResources.class.getName());
 
     final JavaProxy impl;  // TODO ADD  NEW INTERFACE ?
 

@@ -1,6 +1,5 @@
 tp1\impl\clients\rest\RestUsersClient$3.class
 tp1\impl\servers\soap\DirectorySoapServer.class
-tp1\impl\servers\rest\proxyMsgs\DeleteArgs.class
 tp1\api\User.class
 tp1\impl\servers\common\JavaDirectory$1.class
 tp1\impl\servers\rest\UsersResources.class
@@ -8,7 +7,6 @@ tp1\impl\servers\soap\UsersSoapServer.class
 util\Url.class
 util\IP.class
 tp1\impl\servers\common\JavaDirectory$UserFiles.class
-tp1\impl\servers\rest\proxyMsgs\UploadArgs2.class
 tp1\api\service\java\Users.class
 tp1\impl\clients\rest\RestClient.class
 tp1\api\service\java\Result$ErrorCode.class
@@ -19,6 +17,7 @@ tp1\api\service\soap\SoapDirectory.class
 tp1\impl\clients\common\RetryClient.class
 tp1\impl\clients\rest\RestFilesClient$1.class
 tp1\impl\clients\rest\RestDirectoryClient$3.class
+tp1\impl\servers\rest\proxyMsgs\GetFile.class
 tp1\impl\servers\common\AbstractServer.class
 tp1\impl\servers\rest\proxyMsgs\ListFolderReturn$FolderEntry.class
 tp1\impl\servers\rest\proxyMsgs\ListFolderContinueArgs.class
@@ -58,6 +57,7 @@ tp1\impl\clients\soap\SoapClient$ResultSupplier.class
 tp1\api\service\rest\RestUsers.class
 tp1\impl\servers\rest\DirectoryResources.class
 tp1\impl\clients\soap\SoapClient$VoidSupplier.class
+tp1\impl\servers\rest\proxyMsgs\UploadArgs.class
 tp1\impl\clients\rest\RestUsersClient$1.class
 tp1\impl\clients\rest\RestUsersClient$4.class
 tp1\impl\servers\rest\UsersRestServer.class
@@ -76,7 +76,6 @@ tp1\impl\clients\soap\SoapUsersClient.class
 test\Test.class
 tp1\api\FileInfo.class
 tp1\impl\clients\rest\RestUsersClient$2.class
-tp1\impl\servers\rest\proxyMsgs\UploadFileV2Args.class
 tp1\impl\clients\rest\RestDirectoryClient$1.class
 tp1\impl\clients\soap\SoapClient.class
 tp1\impl\servers\rest\proxyMsgs\ListFolderArgs.class
@@ -84,6 +83,7 @@ tp1\impl\servers\soap\AbstractSoapServer.class
 tp1\api\service\java\Files.class
 tp1\impl\clients\ClientFactory$1.class
 tp1\impl\servers\soap\FilesSoapServer.class
+tp1\impl\servers\rest\proxyMsgs\DeleteFolderOrFileArgs.class
 tp1\impl\servers\rest\util\GenericExceptionMapper.class
 tp1\impl\servers\rest\ProxyResources.class
 tp1\impl\servers\common\JavaProxy.class

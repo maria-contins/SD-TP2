@@ -9,9 +9,10 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.Gson;
 import org.pac4j.scribe.builder.api.DropboxApi20;
 import tp1.api.service.java.Result;
-import tp1.impl.servers.rest.proxyMsgs.DeleteArgs;
-import tp1.impl.servers.rest.proxyMsgs.UploadArgs2;
-import tp1.impl.servers.rest.proxyMsgs.UploadFileV2Args;
+import tp1.impl.servers.rest.proxyMsgs.CreateFolderV2Args;
+import tp1.impl.servers.rest.proxyMsgs.DeleteFolderOrFileArgs;
+import tp1.impl.servers.rest.proxyMsgs.GetFile;
+import tp1.impl.servers.rest.proxyMsgs.UploadArgs;
 import util.Sleep;
 
 import java.util.Collections;
@@ -22,12 +23,12 @@ public class JavaProxy{
     //Dropbox API stuff
     private static final String apiKey = "hco8hk1gqbs4lle";
     private static final String apiSecret = "eorx05nr0ghxefn";
-    private static final String accessTokenStr = "sl.BI0Xz3CvdOuy8sXThk85hbs1ejWGhBwrMverhNNL35C7oThG3aXdHECgCjT7l52o0v3WnSAWIlf6I0Tw1i6ce0k2c7zr0gcyiZ4J1nzniBI4QMEE1rCRuTJn-xwfpI870Knx1wgLNcsV";
-
+    private static final String accessTokenStr = "sl.BI72M-aQfvD2U9Muyi_lZjDeL2RLNN-exNI17maGAvf1BtBDbnPJ39GJGDqNbHr7yiAIaYPBpV_f-zvRBU5hjyWzuEg3gyLkWroecsPSGJfmhb2j9kldYQY-FPaXoXYWFleEuB78jswf";
     //API Request Links
     private static final String DELETE_FOLDER_OR_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";
     private static final String GET_FILE_URL = "https://content.dropboxapi.com/2/files/download";
     private static final String UPLOAD_FILE_URL = "https://content.dropboxapi.com/2/files/upload";
+    private static final String CREATE_FOLDER_V2_URL = "https://api.dropboxapi.com/2/files/create_folder_v2";
 
     private final Gson json;
     private final OAuth20Service service;
@@ -50,7 +51,7 @@ public class JavaProxy{
     public Result<byte[]> getFile(String fileId, String token) {
         OAuthRequest getFile = new OAuthRequest(Verb.POST, GET_FILE_URL);
         getFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
-        getFile.addHeader("Dropbox-API-Arg", json.toJson("/" + fileId));
+        getFile.addHeader("Dropbox-API-Arg", json.toJson(new GetFile("/MainFolder/" + fileId)));
 
         service.signRequest(accessToken, getFile);
         int retry = 0;
@@ -78,9 +79,8 @@ public class JavaProxy{
 
     public Result<Void> deleteFile(String fileId, String token) {
         OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FOLDER_OR_FILE_URL);
-
         delete.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
-        delete.setPayload(json.toJson(new DeleteArgs(Collections.singletonList(fileId))));
+        delete.setPayload(json.toJson(new DeleteFolderOrFileArgs("/MainFolder/" + fileId))); //TODO FIX THIS ?
 
         service.signRequest(accessToken, delete);
        int retry = 0;
@@ -106,7 +106,9 @@ public class JavaProxy{
     public Result<Void> writeFile(String fileId, byte[] data, String token) {
         OAuthRequest writeFile = new OAuthRequest(Verb.POST, UPLOAD_FILE_URL);
         writeFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
-        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new UploadFileV2Args("/" + fileId, false, false, false, false)));
+        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new UploadArgs("/MainFolder/" + fileId, "overwrite")));
+
+        writeFile.setPayload(data);
 
         service.signRequest(accessToken, writeFile);
         int retry = 0;
@@ -132,6 +134,86 @@ public class JavaProxy{
     }
 
     public Result<Void> deleteUserFiles(String userId, String token) {
+        OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FOLDER_OR_FILE_URL);
+        delete.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
+        delete.setPayload(json.toJson(new DeleteFolderOrFileArgs("/MainFolder/" + userId)));
+
+        service.signRequest(accessToken, delete);
+        int retry = 0;
+
+        Response r = null;
+        while(retry < RETRIES && r ==null){
+            retry++;
+
+            try {
+                r =service.execute(delete);
+                if (r.getCode() == 200)
+                    return Result.ok();
+                else if (r.getCode() == 429) {
+                    retry++;
+                    Sleep.seconds(3);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return null;
+    }
+
+    public boolean delete(){
+        OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FOLDER_OR_FILE_URL);
+        delete.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
+        delete.setPayload(json.toJson(new DeleteFolderOrFileArgs("/MainFolder")));
+
+        service.signRequest(accessToken, delete);
+        int retry = 0;
+
+        while (retry < RETRIES) {
+            try {
+                Response r = service.execute(delete);
+                // 409 path not found
+                if (r.getCode() == 200 || r.getCode() == 409)
+                    return true;
+                if (r.getCode() == 429) {
+                    retry++;
+                    Thread.sleep(Integer.parseInt(r.getHeader("Retry-After")));
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                retry++;
+            }
+        }
+        return false;
+    }
+
+    public boolean createFolder(){
+        var createFolder = new OAuthRequest(Verb.POST, CREATE_FOLDER_V2_URL);
+        createFolder.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
+
+        createFolder.setPayload(json.toJson(new CreateFolderV2Args("/MainFolder", false)));
+
+        service.signRequest(accessToken, createFolder);
+
+        int retry = 0;
+        while (retry < RETRIES) {
+            try {
+                Response r = service.execute(createFolder);
+                // 409 means folder already exists
+                if (r.getCode() == 200 || r.getCode() == 409)
+                    return true;
+                if (r.getCode() == 429) {
+                    retry++;
+                    Thread.sleep(Integer.parseInt(r.getHeader("Retry-After")));
+                } else {
+                    return false;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                retry++;
+            }
+        }
+        return false;
     }
 }
