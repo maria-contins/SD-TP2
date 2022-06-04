@@ -10,13 +10,14 @@ import com.google.gson.Gson;
 import org.pac4j.scribe.builder.api.DropboxApi20;
 import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
-import tp1.impl.servers.rest.proxyMsgs.DeleteFileOrFolderArgs;
-
-import tp1.impl.servers.rest.proxyMsgs.GetFileArgs;
+import tp1.impl.servers.rest.proxyMsgs.DeleteArgs;
+import tp1.impl.servers.rest.proxyMsgs.UploadArgs;
 import util.Sleep;
 
+import java.util.Collections;
 
-public class JavaProxy implements Files {
+
+public class JavaProxy{
 
     //Dropbox API stuff
     private static final String apiKey = "hco8hk1gqbs4lle";
@@ -26,11 +27,13 @@ public class JavaProxy implements Files {
     //API Request Links
     private static final String DELETE_FOLDER_OR_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";
     private static final String GET_FILE_URL = "https://content.dropboxapi.com/2/files/download";
-    private static final String CREATE_FILE_URL = "https://content.dropboxapi.com/2/files/upload";
+    private static final String UPLOAD_FILE_URL = "https://content.dropboxapi.com/2/files/upload";
 
     private final Gson json;
     private final OAuth20Service service;
     private final OAuth2AccessToken accessToken;
+
+    private static final int HTTP_SUCCESS = 200;
 
     private static final String CONTENT_TYPE_HDR = "Content-Type";
     private static final String JSON_CONTENT_TYPE = "application/json";
@@ -44,11 +47,10 @@ public class JavaProxy implements Files {
         service = new ServiceBuilder(apiKey).apiSecret(apiSecret).build(DropboxApi20.INSTANCE);
     }
 
-    @Override
     public Result<byte[]> getFile(String fileId, String token) {
         OAuthRequest getFile = new OAuthRequest(Verb.POST, GET_FILE_URL);
         getFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
-        getFile.addHeader("Dropbox-API-Arg", json.toJson(new GetFileArgs("/" + fileId)));
+        getFile.addHeader("Dropbox-API-Arg", json.toJson("/" + fileId));
 
         service.signRequest(accessToken, getFile);
         int retry = 0;
@@ -57,7 +59,10 @@ public class JavaProxy implements Files {
         while (retry < RETRIES && r==null) {
             retry++;
             try {
-                r =service.execute(getFile);
+                var response = service.execute(getFile);
+                if (response.getCode() != HTTP_SUCCESS)
+                    throw new RuntimeException(String.format("Failed to create directory: %s, Status: %d, \nReason: %s\n",
+                            directoryName, response.getCode(), response.getBody()));
                 if (r.getCode() == 200)
                     return Result.ok(r.getStream().readAllBytes());
                 else if (r.getCode() == 429) {
@@ -71,12 +76,11 @@ public class JavaProxy implements Files {
         return null;
     }
 
-    @Override
     public Result<Void> deleteFile(String fileId, String token) {
         OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FOLDER_OR_FILE_URL);
 
         delete.addHeader(CONTENT_TYPE_HDR, JSON_CONTENT_TYPE);
-        delete.setPayload(json.toJson(new DeleteFileOrFolderArgs(fileId)));
+        delete.setPayload(json.toJson(new DeleteArgs(Collections.singletonList(fileId))));
 
         service.signRequest(accessToken, delete);
        int retry = 0;
@@ -99,11 +103,10 @@ public class JavaProxy implements Files {
         return null;
     }
 
-    @Override
     public Result<Void> writeFile(String fileId, byte[] data, String token) {
-        OAuthRequest writeFile = new OAuthRequest(Verb.POST, CREATE_FILE_URL);
+        OAuthRequest writeFile = new OAuthRequest(Verb.POST, UPLOAD_FILE_URL);
         writeFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
-        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new GetFileArgs("/" + fileId)));
+        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new UploadArgs("/" + fileId, false)));
 
         service.signRequest(accessToken, writeFile);
         int retry = 0;
@@ -113,6 +116,8 @@ public class JavaProxy implements Files {
             retry++;
             try {
                 r =service.execute(writeFile);
+                System.out.println(r.getCode());
+                System.out.println(r.getBody());
                 if (r.getCode() == 200)
                     return Result.ok();
                 else if (r.getCode() == 429) {
@@ -125,8 +130,7 @@ public class JavaProxy implements Files {
         }
         return null;
     }
-
-    @Override
+    
     public Result<Void> deleteUserFiles(String userId, String token) {
         return null;
     }

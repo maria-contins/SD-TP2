@@ -1,5 +1,6 @@
 tp1\impl\clients\rest\RestUsersClient$3.class
 tp1\impl\servers\soap\DirectorySoapServer.class
+tp1\impl\servers\rest\proxyMsgs\DeleteArgs.class
 tp1\api\User.class
 tp1\impl\servers\common\JavaDirectory$1.class
 tp1\impl\servers\rest\UsersResources.class
@@ -18,6 +19,8 @@ tp1\impl\clients\common\RetryClient.class
 tp1\impl\clients\rest\RestFilesClient$1.class
 tp1\impl\clients\rest\RestDirectoryClient$3.class
 tp1\impl\servers\common\AbstractServer.class
+tp1\impl\servers\rest\proxyMsgs\ListFolderReturn$FolderEntry.class
+tp1\impl\servers\rest\proxyMsgs\ListFolderContinueArgs.class
 util\Sleep.class
 tp1\impl\servers\rest\util\CustomLoggingFilter.class
 tp1\impl\servers\rest\RestResource.class
@@ -28,7 +31,6 @@ tp1\impl\clients\rest\RestFilesClient.class
 tp1\impl\servers\soap\SoapFilesWebService.class
 tp1\api\service\rest\RestDirectory.class
 tp1\api\service\soap\UsersException.class
-tp1\impl\servers\rest\proxyMsgs\DeleteFileOrFolderArgs.class
 tp1\impl\clients\common\RetryFilesClient.class
 tp1\impl\servers\soap\SoapWebService.class
 tp1\api\service\rest\RestFiles.class
@@ -44,6 +46,7 @@ tp1\impl\servers\common\JavaFiles.class
 tp1\impl\clients\soap\SoapFilesClient.class
 tp1\impl\servers\soap\SoapDirectoryWebService.class
 tp1\impl\servers\rest\RestResource$1.class
+tp1\impl\servers\rest\proxyMsgs\ListFolderReturn.class
 tp1\impl\servers\common\JavaUsers.class
 tp1\impl\clients\soap\SoapDirectoryClient.class
 tp1\api\service\java\OkResult.class
@@ -53,6 +56,7 @@ tp1\impl\clients\soap\SoapClient$ResultSupplier.class
 tp1\api\service\rest\RestUsers.class
 tp1\impl\servers\rest\DirectoryResources.class
 tp1\impl\clients\soap\SoapClient$VoidSupplier.class
+tp1\impl\servers\rest\proxyMsgs\UploadArgs.class
 tp1\impl\clients\rest\RestUsersClient$1.class
 tp1\impl\clients\rest\RestUsersClient$4.class
 tp1\impl\servers\rest\UsersRestServer.class
@@ -63,7 +67,6 @@ tp1\impl\clients\common\RetryDirectoryClient.class
 util\InsecureHostnameVerifier.class
 tp1\impl\servers\rest\FilesRestServer.class
 util\IO.class
-tp1\impl\servers\rest\proxyMsgs\GetFileArgs.class
 util\Debug.class
 tp1\impl\servers\common\JavaDirectory$FileCounts.class
 tp1\impl\servers\rest\DirectoryRestServer.class
@@ -74,6 +77,7 @@ tp1\api\FileInfo.class
 tp1\impl\clients\rest\RestUsersClient$2.class
 tp1\impl\clients\rest\RestDirectoryClient$1.class
 tp1\impl\clients\soap\SoapClient.class
+tp1\impl\servers\rest\proxyMsgs\ListFolderArgs.class
 tp1\impl\servers\soap\AbstractSoapServer.class
 tp1\api\service\java\Files.class
 tp1\impl\clients\ClientFactory$1.class
