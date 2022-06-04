@@ -8,6 +8,7 @@ tp1\impl\servers\soap\UsersSoapServer.class
 util\Url.class
 util\IP.class
 tp1\impl\servers\common\JavaDirectory$UserFiles.class
+tp1\impl\servers\rest\proxyMsgs\UploadArgs2.class
 tp1\api\service\java\Users.class
 tp1\impl\clients\rest\RestClient.class
 tp1\api\service\java\Result$ErrorCode.class
@@ -52,11 +53,11 @@ tp1\impl\clients\soap\SoapDirectoryClient.class
 tp1\api\service\java\OkResult.class
 tp1\impl\clients\rest\RestDirectoryClient$2.class
 tp1\api\service\java\Directory.class
+tp1\impl\servers\rest\proxyMsgs\CreateFolderV2Args.class
 tp1\impl\clients\soap\SoapClient$ResultSupplier.class
 tp1\api\service\rest\RestUsers.class
 tp1\impl\servers\rest\DirectoryResources.class
 tp1\impl\clients\soap\SoapClient$VoidSupplier.class
-tp1\impl\servers\rest\proxyMsgs\UploadArgs.class
 tp1\impl\clients\rest\RestUsersClient$1.class
 tp1\impl\clients\rest\RestUsersClient$4.class
 tp1\impl\servers\rest\UsersRestServer.class
@@ -75,6 +76,7 @@ tp1\impl\clients\soap\SoapUsersClient.class
 test\Test.class
 tp1\api\FileInfo.class
 tp1\impl\clients\rest\RestUsersClient$2.class
+tp1\impl\servers\rest\proxyMsgs\UploadFileV2Args.class
 tp1\impl\clients\rest\RestDirectoryClient$1.class
 tp1\impl\clients\soap\SoapClient.class
 tp1\impl\servers\rest\proxyMsgs\ListFolderArgs.class

@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class ProxyResources extends RestResource implements RestFiles {
     private static Logger Log = Logger.getLogger(FilesResources.class.getName());
 
-    final Files impl;
+    final JavaProxy impl;  // TODO ADD  NEW INTERFACE ?
 
     public ProxyResources(){
         impl = new JavaProxy();

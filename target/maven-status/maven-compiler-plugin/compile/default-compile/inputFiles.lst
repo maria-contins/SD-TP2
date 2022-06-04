@@ -4,7 +4,6 @@ C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\common\RetryDirectoryClie
 C:\Users\Duda\Documents\SD\SD-TP2\src\test\Test.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\soap\SoapClient.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\UsersRestServer.java
-C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\UploadArgs.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\ProxyResources.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\soap\SoapUsersClient.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\AbstractRestServer.java
@@ -14,6 +13,7 @@ C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\DirectoryResources.j
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\FilesResources.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\service\java\Files.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\common\JavaFiles.java
+C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\UploadFileV2Args.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\Clients.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\common\RetryClient.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\service\java\Directory.java
@@ -21,6 +21,7 @@ C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\UsersResources.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\FileInfo.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\util\IO.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\service\soap\SoapFiles.java
+C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\UploadArgs2.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\util\Url.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\ListFolderContinueArgs.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\ProxyServer.java
@@ -29,6 +30,7 @@ C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\ClientFactory.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\ListFolderReturn.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\util\CustomLoggingFilter.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\service\java\Users.java
+C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\CreateFolderV2Args.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\servers\rest\FilesRestServer.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\api\service\soap\FilesException.java
 C:\Users\Duda\Documents\SD\SD-TP2\src\tp1\impl\clients\rest\RestUsersClient.java

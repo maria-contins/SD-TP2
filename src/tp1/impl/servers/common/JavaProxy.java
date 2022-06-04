@@ -8,10 +8,10 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.Gson;
 import org.pac4j.scribe.builder.api.DropboxApi20;
-import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
 import tp1.impl.servers.rest.proxyMsgs.DeleteArgs;
-import tp1.impl.servers.rest.proxyMsgs.UploadArgs;
+import tp1.impl.servers.rest.proxyMsgs.UploadArgs2;
+import tp1.impl.servers.rest.proxyMsgs.UploadFileV2Args;
 import util.Sleep;
 
 import java.util.Collections;
@@ -59,10 +59,10 @@ public class JavaProxy{
         while (retry < RETRIES && r==null) {
             retry++;
             try {
-                var response = service.execute(getFile);
-                if (response.getCode() != HTTP_SUCCESS)
-                    throw new RuntimeException(String.format("Failed to create directory: %s, Status: %d, \nReason: %s\n",
-                            directoryName, response.getCode(), response.getBody()));
+                r = service.execute(getFile);
+                if (r.getCode() != HTTP_SUCCESS)
+                    throw new RuntimeException(String.format("Failed to get File: %s, Status: %d, \nReason: %s\n",
+                            r.getCode(), r.getBody()));
                 if (r.getCode() == 200)
                     return Result.ok(r.getStream().readAllBytes());
                 else if (r.getCode() == 429) {
@@ -106,7 +106,7 @@ public class JavaProxy{
     public Result<Void> writeFile(String fileId, byte[] data, String token) {
         OAuthRequest writeFile = new OAuthRequest(Verb.POST, UPLOAD_FILE_URL);
         writeFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
-        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new UploadArgs("/" + fileId, false)));
+        writeFile.addHeader("Dropbox-API-Arg", json.toJson(new UploadFileV2Args("/" + fileId, false, false, false, false)));
 
         service.signRequest(accessToken, writeFile);
         int retry = 0;
@@ -130,7 +130,7 @@ public class JavaProxy{
         }
         return null;
     }
-    
+
     public Result<Void> deleteUserFiles(String userId, String token) {
         return null;
     }
