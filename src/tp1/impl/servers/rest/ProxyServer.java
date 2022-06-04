@@ -1,6 +1,5 @@
 package tp1.impl.servers.rest;
 
-import com.github.scribejava.apis.DropboxApi;
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.api.service.java.Files;
 import tp1.impl.servers.common.JavaProxy;
@@ -39,10 +38,12 @@ public class ProxyServer extends AbstractRestServer{
         JavaProxy dropbox = new JavaProxy();
 
         if(flag.equals("true")){
-            dropbox.delete();
+            dropbox.delete("/Main");
         }
 
-        boolean createMainFolder = dropbox.createFolder();
+        boolean createMainFolder = dropbox.createFolder("/Main");
+        dropbox.createFolder("/Main/Files");
+        dropbox.createFolder("/Main/UserFiles");
         if (createMainFolder)
             System.out.println("Directory created successfuly.");
         else
