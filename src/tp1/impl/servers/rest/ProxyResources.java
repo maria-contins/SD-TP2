@@ -2,8 +2,7 @@ package tp1.impl.servers.rest;
 
 import tp1.api.service.java.Files;
 import tp1.api.service.rest.RestFiles;
-import tp1.impl.servers.common.JavaFiles;
-import tp1.impl.servers.common.ProxyFiles;
+import tp1.impl.servers.common.JavaProxy;
 
 import java.util.logging.Logger;
 
@@ -13,7 +12,7 @@ public class ProxyResources extends RestResource implements RestFiles {
     final Files impl;
 
     public ProxyResources(){
-        impl = new ProxyFiles();
+        impl = new JavaProxy();
     }
 
     public void writeFile(String fileId, byte[] data, String token){

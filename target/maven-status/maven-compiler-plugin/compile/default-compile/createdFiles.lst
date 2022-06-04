@@ -28,6 +28,7 @@ tp1\impl\clients\rest\RestFilesClient.class
 tp1\impl\servers\soap\SoapFilesWebService.class
 tp1\api\service\rest\RestDirectory.class
 tp1\api\service\soap\UsersException.class
+tp1\impl\servers\rest\proxyMsgs\DeleteFileOrFolderArgs.class
 tp1\impl\clients\common\RetryFilesClient.class
 tp1\impl\servers\soap\SoapWebService.class
 tp1\api\service\rest\RestFiles.class
@@ -36,6 +37,7 @@ tp1\impl\clients\rest\RestUsersClient.class
 tp1\api\service\soap\FilesException.class
 tp1\api\service\java\Result.class
 tp1\impl\servers\rest\FilesResources.class
+tp1\impl\servers\rest\ProxyServer.class
 tp1\impl\servers\rest\AbstractRestServer.class
 tp1\api\service\soap\SoapFiles.class
 tp1\impl\servers\common\JavaFiles.class
@@ -61,6 +63,7 @@ tp1\impl\clients\common\RetryDirectoryClient.class
 util\InsecureHostnameVerifier.class
 tp1\impl\servers\rest\FilesRestServer.class
 util\IO.class
+tp1\impl\servers\rest\proxyMsgs\GetFileArgs.class
 util\Debug.class
 tp1\impl\servers\common\JavaDirectory$FileCounts.class
 tp1\impl\servers\rest\DirectoryRestServer.class
@@ -76,6 +79,8 @@ tp1\api\service\java\Files.class
 tp1\impl\clients\ClientFactory$1.class
 tp1\impl\servers\soap\FilesSoapServer.class
 tp1\impl\servers\rest\util\GenericExceptionMapper.class
+tp1\impl\servers\rest\ProxyResources.class
+tp1\impl\servers\common\JavaProxy.class
 tp1\api\service\java\ErrorResult.class
 tp1\impl\servers\common\JavaDirectory$ExtendedFileInfo.class
 tp1\impl\clients\rest\RestUsersClient$5.class
