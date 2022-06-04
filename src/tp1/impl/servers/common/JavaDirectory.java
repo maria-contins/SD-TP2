@@ -11,7 +11,6 @@ import static tp1.impl.clients.Clients.FilesClients;
 import static tp1.impl.clients.Clients.UsersClients;
 
 import java.net.URI;
-import java.sql.Time;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +25,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import org.checkerframework.checker.units.qual.Current;
 import tp1.api.FileInfo;
 import tp1.api.User;
 import tp1.api.service.java.Directory;
@@ -186,8 +184,11 @@ public class JavaDirectory implements Directory {
 
 		if (!file.info().hasAccess(accUserId))
 			return error(FORBIDDEN);
-		
-		return redirect(file.info().getFileURL() + "?token=" + createToken(fileId)); // TODO WHAT
+
+		if (file.info.getFileURL().contains("rest"))
+			return redirect(file.info().getFileURL() + "?token=" + createToken(fileId));
+		else
+			return FilesClients.get(file.uri()).getFile(fileId, /*password,*/ createToken(fileId)); // TODO kafka issue?
 	}
 
 	@Override
