@@ -29,7 +29,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<byte[]> getFile(String fileId, String token) {
 
-		if(invalidTokenDir(token))
+		if(invalidTokenDir(token, fileId))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -40,7 +40,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<Void> deleteFile(String fileId, String token) {
 
-		if(invalidTokenDir(token))
+		if(invalidTokenDir(token, fileId))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -51,7 +51,7 @@ public class JavaFiles implements Files {
 	@Override
 	public Result<Void> writeFile(String fileId, byte[] data, String token) {
 
-		if(invalidTokenDir(token))
+		if(invalidTokenDir(token, fileId))
 			return error(FORBIDDEN);
 
 		fileId = fileId.replace( DELIMITER, "/");
@@ -60,6 +60,7 @@ public class JavaFiles implements Files {
 		IO.write( file, data);
 		return ok();
 	}
+	
 
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String token) {
@@ -84,15 +85,14 @@ public class JavaFiles implements Files {
 		return userId + JavaFiles.DELIMITER + filename;
 	}
 
-	private boolean invalidTokenDir(String token){
+	private boolean invalidTokenDir(String token, String fileId){
 		String[] tokenInfo = token.split("\\?\\?");
 
-		String fileId = tokenInfo[0];
 		String time = tokenInfo[1];
 		String mySecret = Token.get();
 
 		if (Long.parseLong(time) < currentTimeMillis())
-			return false;
+			return true;
 
 		long hashed = (fileId + time + mySecret).hashCode();
 
@@ -106,7 +106,7 @@ public class JavaFiles implements Files {
 		String mySecret = Token.get();
 
 		if (Long.parseLong(time) < currentTimeMillis())
-			return false;
+			return true;
 
 		long hashed = (time + mySecret).hashCode();
 

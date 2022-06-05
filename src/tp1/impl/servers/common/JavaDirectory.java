@@ -208,18 +208,19 @@ public class JavaDirectory implements Directory {
 			return error(FORBIDDEN);
 
 		Result<byte[]> result = null;
-		for (URI uri : files.get(fileId).allUris) {
-			if (file.info.getFileURL().contains("rest"))
-				result = redirect((String.format("%s/files/%s", uri, fileId) + "?token=" + createToken(fileId)));
-			else
-				result = FilesClients.get(uri).getFile(fileId, /*password,*/ createToken(fileId)); // TODO kafka issue?
 
-			System.out.println((String.format("%s/files/%s", uri, fileId)));
-			System.out.println(FilesClients.get(uri));
+		URI fileURI = files.get(fileId).allUris.get(0);
 
-			if (result.isOK())
-				break;;
+		if (fileURI.toString().contains("rest"))
+			result = redirect((String.format("%s/files/%s", fileURI, fileId) + "?token=" + createToken(fileId)));
+		else
+			result = FilesClients.get(fileURI).getFile(fileId, createToken(fileId));
+
+		if(!result.isOK()){
+			URI first = files.get(fileId).allUris.remove(0);
+			files.get(fileId).allUris.add(first);
 		}
+
 		return result;
 	}
 
@@ -339,10 +340,12 @@ public class JavaDirectory implements Directory {
 
 	private String createToken(String fileId) {
 		String mySecret = Token.get();
-		long time = (currentTimeMillis()+3600000);
+		long time = (currentTimeMillis()+10000);
 		String clear = fileId+"??"+time+"??" ;
 		int hashed = (fileId+time+mySecret).hashCode();
 
+		System.out.println(clear);
+		System.out.println(hashed);
 		return clear+hashed;
 	}
 
@@ -353,7 +356,7 @@ public class JavaDirectory implements Directory {
 		String mySecret = Token.get();
 
 		if (Long.parseLong(time) < currentTimeMillis())
-			return false;
+			return true;
 
 		long hashed = (time + mySecret).hashCode();
 
