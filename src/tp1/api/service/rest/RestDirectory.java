@@ -52,7 +52,7 @@ public interface RestDirectory {
 	 */
 	@DELETE
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}")
-	void deleteFile(@PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
+	void deleteFile(@HeaderParam(HEADER_VERSION) Long version, @PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
 			@QueryParam(PASSWORD) String password);
 
 	/**
@@ -73,7 +73,7 @@ public interface RestDirectory {
 	 */
 	@POST
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}/share/{" + USER_ID_SHARE + "}")
-	void shareFile(@PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
+	void shareFile(@HeaderParam(HEADER_VERSION) Long version, @PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
 			@PathParam(USER_ID_SHARE) String userIdShare, @QueryParam(PASSWORD) String password);
 
 	/**
@@ -94,7 +94,7 @@ public interface RestDirectory {
 	 */
 	@DELETE
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}/share/{" + USER_ID_SHARE + "}")
-	void unshareFile(@PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
+	void unshareFile(@HeaderParam(HEADER_VERSION) Long version, @PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
 			@PathParam(USER_ID_SHARE) String userIdShare, @QueryParam(PASSWORD) String password);
 
 	/**

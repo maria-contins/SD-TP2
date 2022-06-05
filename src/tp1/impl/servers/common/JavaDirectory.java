@@ -90,7 +90,7 @@ public class JavaDirectory implements Directory {
 
 	
 	@Override
-	public Result<Void> deleteFile(String filename, String userId, String password) {
+	public Result<Void> deleteFile(Long version, String filename, String userId, String password) {
 		if (badParam(filename) || badParam(userId))
 			return error(BAD_REQUEST);
 
@@ -120,7 +120,7 @@ public class JavaDirectory implements Directory {
 	}
 
 	@Override
-	public Result<Void> shareFile(String filename, String userId, String userIdShare, String password) {
+	public Result<Void> shareFile(Long version, String filename, String userId, String userIdShare, String password) {
 		if (badParam(filename) || badParam(userId) || badParam(userIdShare))
 			return error(BAD_REQUEST);
 
@@ -144,7 +144,7 @@ public class JavaDirectory implements Directory {
 	}
 
 	@Override
-	public Result<Void> unshareFile(String filename, String userId, String userIdShare, String password) {
+	public Result<Void> unshareFile(Long version, String filename, String userId, String userIdShare, String password) {
 		if (badParam(filename) || badParam(userId) || badParam(userIdShare))
 			return error(BAD_REQUEST);
 
@@ -168,7 +168,7 @@ public class JavaDirectory implements Directory {
 	}
 
 	@Override
-	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
+	public Result<byte[]> getFile(Long version, String filename, String userId, String accUserId, String password) {
 
 		if (badParam(filename))
 			return error(BAD_REQUEST);

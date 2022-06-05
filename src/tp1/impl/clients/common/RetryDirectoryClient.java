@@ -20,19 +20,19 @@ public class RetryDirectoryClient extends RetryClient implements Directory {
 	}
 
 	@Override
-	public Result<Void> deleteFile(String filename, String userId, String password) {
-		return super.reTry( ()-> impl.deleteFile(filename, userId, password));
+	public Result<Void> deleteFile(Long version, String filename, String userId, String password) {
+		return super.reTry( ()-> impl.deleteFile(version, filename, userId, password));
 		
 	}
 
 	@Override
-	public Result<Void> shareFile(String filename, String userId, String userIdShare, String password) {
-		return super.reTry( ()-> impl.shareFile(filename, userId, userIdShare, password));
+	public Result<Void> shareFile(Long version, String filename, String userId, String userIdShare, String password) {
+		return super.reTry( ()-> impl.shareFile(version, filename, userId, userIdShare, password));
 	}
 
 	@Override
-	public Result<Void> unshareFile(String filename, String userId, String userIdShare, String password) {
-		return super.reTry( ()-> impl.unshareFile(filename, userId, userIdShare, password));
+	public Result<Void> unshareFile(Long version, String filename, String userId, String userIdShare, String password) {
+		return super.reTry( ()-> impl.unshareFile(version, filename, userId, userIdShare, password));
 	}
 
 	@Override
