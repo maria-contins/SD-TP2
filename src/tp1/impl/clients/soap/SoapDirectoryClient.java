@@ -23,7 +23,7 @@ public class SoapDirectoryClient extends SoapClient<SoapDirectory> implements Di
 	}
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+	public Result<FileInfo> writeFile(Long version, String filename, byte[] data, String userId, String password) {
 		return super.toJavaResult(() -> impl.writeFile(filename, data, userId, password));
 	}
 

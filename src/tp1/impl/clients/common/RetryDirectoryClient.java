@@ -15,8 +15,8 @@ public class RetryDirectoryClient extends RetryClient implements Directory {
 	}
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
-		return super.reTry( ()-> impl.writeFile(filename, data, userId, password));
+	public Result<FileInfo> writeFile(Long version, String filename, byte[] data, String userId, String password) {
+		return super.reTry( ()-> impl.writeFile(version, filename, data, userId, password));
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class RetryDirectoryClient extends RetryClient implements Directory {
 	}
 
 	@Override
-	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
-		return super.reTry( ()-> impl.getFile(filename, userId, accUserId, password));
+	public Result<byte[]> getFile(Long version, String filename, String userId, String accUserId, String password) {
+		return super.reTry( ()-> impl.getFile(version, filename, userId, accUserId, password));
 	}
 
 	@Override

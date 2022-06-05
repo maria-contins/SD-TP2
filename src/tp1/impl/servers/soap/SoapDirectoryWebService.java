@@ -29,7 +29,7 @@ public class SoapDirectoryWebService extends SoapWebService implements SoapDirec
 		Log.info(String.format("SOAP writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
 
-		return super.resultOrThrow(impl.writeFile(filename, data, userId, password), DirectoryException::new);
+		return super.resultOrThrow(impl.writeFile(version, filename, data, userId, password), DirectoryException::new);
 	}
 
 	@Override

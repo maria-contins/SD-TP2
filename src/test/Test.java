@@ -14,7 +14,7 @@ import util.Debug;
 public class Test {
 
 	public static void main(String[] args) throws Exception {
-		UsersRestServer.main( new String[] { "xxx" });
+/*		UsersRestServer.main( new String[] { "xxx" });
 		DirectoryRestServer.main( new String[] {"xxx"});
 		FilesRestServer.main(new String[] {"xxx"});
 
@@ -30,14 +30,14 @@ public class Test {
 		
 		Directory dir = Clients.DirectoryClients.get();
 		
-		var x1 = dir.writeFile("file1", "xpto1".getBytes(), "simone", "12345");
+		var x1 = dir.writeFile(version, "file1", "xpto1".getBytes(), "simone", "12345");
 		System.err.println( x1 );
 		
-		dir.writeFile("file1", "xpto1".getBytes(), "smd", "12345");
+		dir.writeFile(version, "file1", "xpto1".getBytes(), "smd", "12345");
 		
-		dir.writeFile("file2", "xpto2".getBytes(), "nmp", "54321");
+		dir.writeFile(version, "file2", "xpto2".getBytes(), "nmp", "54321");
 		
-		dir.writeFile("file3", "xpto3".getBytes(), "smd", "12345");
+		dir.writeFile(version, "file3", "xpto3".getBytes(), "smd", "12345");
 		
 		dir.shareFile("file1", "smd", "nmp", "12345");
 		
@@ -47,8 +47,8 @@ public class Test {
 		var xxx = dir.getFile("file1", "smd", "smd", "12345");
 		
 		System.err.println("##########GETFILE: " + xxx);
-//		
-		dir.unshareFile("file1", "smd", "nmp", "12345");
+//		*/
+/*		dir.unshareFile("file1", "smd", "nmp", "12345");
 
 		dir.lsFile("nmp", "54321").value().forEach( System.out::println );
 
@@ -57,7 +57,7 @@ public class Test {
 		System.out.println( new String(x.value()));
 		System.out.println("Done...");
 		
-		us.deleteUser("smd", "12345");
+		us.deleteUser("smd", "12345");*/
 
 //		dir.lsFile("nmp", "54321").value().forEach( System.out::println );
 

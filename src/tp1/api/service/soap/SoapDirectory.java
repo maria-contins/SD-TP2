@@ -15,13 +15,13 @@ public interface SoapDirectory {
 
 
 	@WebMethod
-	FileInfo writeFile(String filename, byte []data, String userId, String password) throws DirectoryException;
+	FileInfo writeFile(Long version, String filename, byte []data, String userId, String password) throws DirectoryException;
 
 	@WebMethod
 	void deleteFile(String filename, String userId, String password) throws DirectoryException;
 
 	@WebMethod
-	void shareFile(String filename, String userId, String userIdShare, String password) throws DirectoryException;
+	void shareFile(Long version, String filename, String userId, String userIdShare, String password) throws DirectoryException;
 
 	@WebMethod
 	void unshareFile(String filename, String userId, String userIdShare, String password) throws DirectoryException;

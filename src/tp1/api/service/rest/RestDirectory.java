@@ -2,15 +2,7 @@ package tp1.api.service.rest;
 
 import java.util.List;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.DefaultValue;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import tp1.api.FileInfo;
 
@@ -24,6 +16,7 @@ public interface RestDirectory {
 	public static final String PASSWORD = "password";
 	public static final String ACC_USER_ID = "accUserId";
 	public static final String USER_ID_SHARE = "userIdShare";
+	public static final String HEADER_VERSION = "X-DFS-version";
 
 	/**
 	 * Write a new version of a file. If the file exists, its contents are
@@ -43,8 +36,8 @@ public interface RestDirectory {
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}")
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.APPLICATION_JSON)
-	FileInfo writeFile(@PathParam(FILENAME) String filename, byte[] data, @PathParam(USER_ID) String userId,
-			@QueryParam(PASSWORD) String password);
+	FileInfo writeFile(@HeaderParam(HEADER_VERSION) Long version, @PathParam(FILENAME) String filename, byte[] data, @PathParam(USER_ID) String userId,
+					   @QueryParam(PASSWORD) String password);
 
 	/**
 	 * Delete an existing file ("userId/filename"). Only the owner (userId) can
@@ -123,7 +116,7 @@ public interface RestDirectory {
 	@GET
 	@Path("/{" + USER_ID + "}/{" + FILENAME + "}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	byte[] getFile(@PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
+	byte[] getFile(@HeaderParam(HEADER_VERSION) Long version, @PathParam(FILENAME) String filename, @PathParam(USER_ID) String userId,
 			@QueryParam(ACC_USER_ID) String accUserId, @QueryParam(PASSWORD) String password);
 
 	/**

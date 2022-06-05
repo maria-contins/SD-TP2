@@ -57,7 +57,7 @@ public class JavaDirectory implements Directory {
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
 	
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+	public Result<FileInfo> writeFile(Long version, String filename, byte[] data, String userId, String password) {
 
 		if (badParam(filename) || badParam(userId))
 			return error(BAD_REQUEST);

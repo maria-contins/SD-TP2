@@ -24,11 +24,11 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 		impl = new JavaDirectory();
 	}
 
-	public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
+	public FileInfo writeFile(Long version, String filename, byte[] data, String userId, String password) {
 		Log.info(String.format("REST writeFile: filename = %s, data.length = %d, userId = %s, password = %s \n",
 				filename, data.length, userId, password));
 
-		return super.resultOrThrow(impl.writeFile(filename, data, userId, password));
+		return super.resultOrThrow(impl.writeFile(version, filename, data, userId, password));
 	}
 
 	@Override
@@ -56,11 +56,11 @@ public class DirectoryResources extends RestResource implements RestDirectory {
 	}
 
 	@Override
-	public byte[] getFile(String filename, String userId, String accUserId, String password) {
+	public byte[] getFile(Long version, String filename, String userId, String accUserId, String password) {
 		Log.info(String.format("REST getFile: filename = %s, userId = %s, accUserId = %s, password =%s\n", filename,
 				userId, accUserId, password));
 
-		var res = impl.getFile(filename, userId, accUserId, password);
+		var res = impl.getFile(version, filename, userId, accUserId, password);
 		if (res.error() == ErrorCode.REDIRECT) {
 			String location = res.errorValue();
 			if (!location.contains(REST))

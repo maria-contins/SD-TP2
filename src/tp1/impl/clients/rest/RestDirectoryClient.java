@@ -22,7 +22,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
 	}
 
 	@Override
-	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
+	public Result<FileInfo> writeFile(Long version, String filename, byte[] data, String userId, String password) {
 		Response r = target.path(userId)
 				.path(filename)
 				.queryParam(RestDirectory.PASSWORD, password)
@@ -67,7 +67,7 @@ public class RestDirectoryClient extends RestClient implements Directory {
 	}
 
 	@Override
-	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
+	public Result<byte[]> getFile(Long version, String filename, String userId, String accUserId, String password) {
 		Response r = target.path(userId)
 				.path(filename)
 				.queryParam(RestDirectory.ACC_USER_ID, accUserId)
