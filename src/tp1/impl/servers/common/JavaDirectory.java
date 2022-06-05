@@ -48,14 +48,14 @@ public class JavaDirectory implements Directory {
 						return res;
 				}
 			});
-	
+
 	final static Logger Log = Logger.getLogger(JavaDirectory.class.getName());
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
 	final Map<String, ExtendedFileInfo> files = new ConcurrentHashMap<>();
 	final Map<String, UserFiles> userFiles = new ConcurrentHashMap<>();
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
-	
+
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
 
@@ -70,31 +70,9 @@ public class JavaDirectory implements Directory {
 		synchronized (uf) {
 			var fileId = fileId(filename, userId);
 			var file = files.get(fileId);
-
 			var info = file != null ? file.info() : new FileInfo();
-
-			Result<Void> result = null;
-			List<URI> uris = new LinkedList<>();
 			for (var uri :  orderCandidateFileServers(file)) {
-				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
-				if (result.isOK())
-					uris.add(uri);
-			}
-			System.out.println(uris);
-			assert result != null;
-			if (result.isOK()) {
-				info.setOwner(userId);
-				info.setFilename(filename);
-				info.setFileURL(String.format("%s/files/%s", uris.get(0), fileId));
-				files.put(fileId, file = new ExtendedFileInfo(uris.get(0), uris, fileId, info));
-				if( uf.owned().add(fileId))
-					getFileCounts(file.uri(), true).numFiles().incrementAndGet();
-				return ok(file.info());
-			} else
-				Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uris.get(0), result));
-
-			/*for (var uri :  orderCandidateFileServers(file)) {
-				var result = FilesClients.get(uri).writeFile(fileId, data, *//*Token.get()*//* createToken(fileId));
+				var result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
 				if (result.isOK()) {
 					info.setOwner(userId);
 					info.setFilename(filename);
@@ -105,12 +83,12 @@ public class JavaDirectory implements Directory {
 					return ok(file.info());
 				} else
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
-			}*/
+			}
 			return error(BAD_REQUEST);
 		}
 	}
 
-	
+
 	@Override
 	public Result<Void> deleteFile(String filename, String userId, String password) {
 		if (badParam(filename) || badParam(userId))
@@ -135,7 +113,7 @@ public class JavaDirectory implements Directory {
 				this.removeSharesOfFile(info);
 				FilesClients.get(file.uri()).deleteFile(fileId, /*password,*/ createToken(fileId));
 			});
-			
+
 			getFileCounts(info.uri(), false).numFiles().decrementAndGet();
 		}
 		return ok();
@@ -207,20 +185,10 @@ public class JavaDirectory implements Directory {
 		if (!file.info().hasAccess(accUserId))
 			return error(FORBIDDEN);
 
-		Result<byte[]> result = null;
-		for (URI uri : files.get(fileId).allUris) {
-			if (file.info.getFileURL().contains("rest"))
-				result = redirect((String.format("%s/files/%s", uri, fileId) + "?token=" + createToken(fileId)));
-			else
-				result = FilesClients.get(uri).getFile(fileId, /*password,*/ createToken(fileId)); // TODO kafka issue?
-
-			System.out.println((String.format("%s/files/%s", uri, fileId)));
-			System.out.println(FilesClients.get(uri));
-
-			if (result.isOK())
-				break;;
-		}
-		return result;
+		if (file.info.getFileURL().contains("rest"))
+			return redirect(file.info().getFileURL() + "?token=" + createToken(fileId));
+		else
+			return FilesClients.get(file.uri()).getFile(fileId, /*password,*/ createToken(fileId)); // TODO kafka issue?
 	}
 
 	@Override
@@ -257,14 +225,14 @@ public class JavaDirectory implements Directory {
 			return error( ErrorCode.INTERNAL_ERROR);
 		}
 	}
-	
+
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String password, String token) {
 		users.invalidate( new UserInfo(userId, password));
 
 		if (invalidToken(token))
 			return error(ErrorCode.FORBIDDEN);
-		
+
 		var fileIds = userFiles.remove(userId);
 		if (fileIds != null)
 			for (var id : fileIds.owned()) {
@@ -282,11 +250,9 @@ public class JavaDirectory implements Directory {
 
 
 	private Queue<URI> orderCandidateFileServers(ExtendedFileInfo file) {
-		//int MAX_SIZE=3;
-		int MAX_SIZE= Math.max(FilesClients.all().size()-1, 1);
-
+		int MAX_SIZE=3;
 		Queue<URI> result = new ArrayDeque<>();
-		
+
 		if( file != null )
 			result.add( file.uri() );
 
@@ -298,23 +264,23 @@ public class JavaDirectory implements Directory {
 				.map(FileCounts::uri)
 				.limit(MAX_SIZE)
 				.forEach( result::add );
-		
+
 		while( result.size() < MAX_SIZE )
 			result.add( result.peek() );
-		
+
 		Log.info("Candidate files servers: " + result+ "\n");
 		return result;
 	}
-	
+
 	private FileCounts getFileCounts( URI uri, boolean create ) {
 		if( create )
 			return fileCounts.computeIfAbsent(uri,  FileCounts::new);
 		else
 			return fileCounts.getOrDefault( uri, new FileCounts(uri) );
 	}
-	
-	
-	static record ExtendedFileInfo(URI uri, List<URI> allUris, String fileId, FileInfo info) {
+
+
+	static record ExtendedFileInfo(URI uri, String fileId, FileInfo info) {
 	}
 
 	static record UserFiles(Set<String> owned, Set<String> shared) {
@@ -332,17 +298,19 @@ public class JavaDirectory implements Directory {
 		static int ascending(FileCounts a, FileCounts b) {
 			return Long.compare( a.numFiles().get(), b.numFiles().get());
 		}
-	}	
-	
-	static record UserInfo(String userId, String password) {		
+	}
+
+	static record UserInfo(String userId, String password) {
 	}
 
 	private String createToken(String fileId) {
 		String mySecret = Token.get();
-		long time = (currentTimeMillis()+3600000);
+		long time = (currentTimeMillis()+10000);
 		String clear = fileId+"??"+time+"??" ;
 		int hashed = (fileId+time+mySecret).hashCode();
 
+		System.out.println(clear);
+		System.out.println(hashed);
 		return clear+hashed;
 	}
 
@@ -353,7 +321,7 @@ public class JavaDirectory implements Directory {
 		String mySecret = Token.get();
 
 		if (Long.parseLong(time) < currentTimeMillis())
-			return false;
+			return true;
 
 		long hashed = (time + mySecret).hashCode();
 

@@ -120,7 +120,7 @@ public class JavaUsers implements Users {
 
 	private String createToken() {
 		String mySecret = Token.get();
-		long time = (currentTimeMillis()+3600000);
+		long time = (currentTimeMillis()+10000);
 		String clear = time+"??" ;
 		int hashed = (time+mySecret).hashCode();
 
