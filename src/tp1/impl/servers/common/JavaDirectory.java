@@ -70,9 +70,31 @@ public class JavaDirectory implements Directory {
 		synchronized (uf) {
 			var fileId = fileId(filename, userId);
 			var file = files.get(fileId);
+
 			var info = file != null ? file.info() : new FileInfo();
+
+			Result<Void> result = null;
+			List<URI> uris = new LinkedList<>();
 			for (var uri :  orderCandidateFileServers(file)) {
-				var result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
+				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
+				if (result.isOK())
+					uris.add(uri);
+			}
+			System.out.println(uris);
+			assert result != null;
+			if (result.isOK()) {
+				info.setOwner(userId);
+				info.setFilename(filename);
+				info.setFileURL(String.format("%s/files/%s", uris.get(0), fileId));
+				files.put(fileId, file = new ExtendedFileInfo(uris.get(0), uris, fileId, info));
+				if( uf.owned().add(fileId))
+					getFileCounts(file.uri(), true).numFiles().incrementAndGet();
+				return ok(file.info());
+			} else
+				Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uris.get(0), result));
+
+			/*for (var uri :  orderCandidateFileServers(file)) {
+				var result = FilesClients.get(uri).writeFile(fileId, data, *//*Token.get()*//* createToken(fileId));
 				if (result.isOK()) {
 					info.setOwner(userId);
 					info.setFilename(filename);
@@ -83,7 +105,7 @@ public class JavaDirectory implements Directory {
 					return ok(file.info());
 				} else
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
-			}
+			}*/
 			return error(BAD_REQUEST);
 		}
 	}
@@ -185,10 +207,21 @@ public class JavaDirectory implements Directory {
 		if (!file.info().hasAccess(accUserId))
 			return error(FORBIDDEN);
 
-		if (file.info.getFileURL().contains("rest"))
-			return redirect(file.info().getFileURL() + "?token=" + createToken(fileId));
+		Result<byte[]> result = null;
+
+		URI fileURI = files.get(fileId).allUris.get(0);
+
+		if (fileURI.toString().contains("rest"))
+			result = redirect((String.format("%s/files/%s", fileURI, fileId) + "?token=" + createToken(fileId)));
 		else
-			return FilesClients.get(file.uri()).getFile(fileId, /*password,*/ createToken(fileId)); // TODO kafka issue?
+			result = FilesClients.get(fileURI).getFile(fileId, createToken(fileId));
+
+		if(!result.isOK()){
+			URI first = files.get(fileId).allUris.remove(0);
+			files.get(fileId).allUris.add(first);
+		}
+
+		return result;
 	}
 
 	@Override
@@ -250,7 +283,9 @@ public class JavaDirectory implements Directory {
 
 
 	private Queue<URI> orderCandidateFileServers(ExtendedFileInfo file) {
-		int MAX_SIZE=3;
+		//int MAX_SIZE=3;
+		int MAX_SIZE= Math.max(FilesClients.all().size()-1, 1);
+
 		Queue<URI> result = new ArrayDeque<>();
 
 		if( file != null )
@@ -280,7 +315,7 @@ public class JavaDirectory implements Directory {
 	}
 
 
-	static record ExtendedFileInfo(URI uri, String fileId, FileInfo info) {
+	static record ExtendedFileInfo(URI uri, List<URI> allUris, String fileId, FileInfo info) {
 	}
 
 	static record UserFiles(Set<String> owned, Set<String> shared) {
