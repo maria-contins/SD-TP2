@@ -60,7 +60,7 @@ public class JavaFiles implements Files {
 		IO.write( file, data);
 		return ok();
 	}
-	
+
 
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String token) {

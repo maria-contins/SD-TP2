@@ -93,19 +93,6 @@ public class JavaDirectory implements Directory {
 			} else
 				Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uris.get(0), result));
 
-			/*for (var uri :  orderCandidateFileServers(file)) {
-				var result = FilesClients.get(uri).writeFile(fileId, data, *//*Token.get()*//* createToken(fileId));
-				if (result.isOK()) {
-					info.setOwner(userId);
-					info.setFilename(filename);
-					info.setFileURL(String.format("%s/files/%s", uri, fileId));
-					files.put(fileId, file = new ExtendedFileInfo(uri, fileId, info));
-					if( uf.owned().add(fileId))
-						getFileCounts(file.uri(), true).numFiles().incrementAndGet();
-					return ok(file.info());
-				} else
-					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
-			}*/
 			return error(BAD_REQUEST);
 		}
 	}

@@ -2,10 +2,10 @@ package tp1.impl.kafka.examples;
 import tp1.impl.kafka.KafkaPublisher;
 
 public class KafkaSender {
-	
-	static final String TOPIC = "topic";
+
+	public static final String TOPIC = "topic";
 	//static final String KAFKA_BROKERS = "localhost:9092"; // For testing locally
-	static final String KAFKA_BROKERS = "kafka:9092"; // When running in docker container...
+	public static final String KAFKA_BROKERS = "kafka:9092"; // When running in docker container...
 	
 	final KafkaPublisher publisher;
 	
