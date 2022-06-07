@@ -218,7 +218,7 @@ public class JavaDirectory implements Directory {
 		else
 			result = FilesClients.get(fileURI).getFile(fileId, createToken(fileId));
 
-		if(!result.isOK() && (result.error() != ErrorCode.REDIRECT)) {
+		if(!result.isOK()) {
 			URI first = files.get(fileId).allUris.remove(0);
 			files.get(fileId).allUris.add(first);
 		}  //TODO DISCOVERY TER UM MAPA,
