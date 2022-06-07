@@ -105,7 +105,7 @@ public class JavaDirectory implements Directory {
 		}
 	}
 
-	
+
 	@Override
 	public Result<Void> deleteFile(String filename, String userId, String password) {
 		if (badParam(filename) || badParam(userId))
@@ -266,14 +266,14 @@ public class JavaDirectory implements Directory {
 			return error( ErrorCode.INTERNAL_ERROR);
 		}
 	}
-	
+
 	@Override
 	public Result<Void> deleteUserFiles(String userId, String password, String token) {
 		users.invalidate( new UserInfo(userId, password));
 
 		if (invalidToken(token))
 			return error(ErrorCode.FORBIDDEN);
-		
+
 		var fileIds = userFiles.remove(userId);
 		if (fileIds != null)
 			for (var id : fileIds.owned()) {
@@ -296,7 +296,7 @@ public class JavaDirectory implements Directory {
 		//int MAX_SIZE= Math.max(FilesClients.all().size()-1, 1);
 
 		Queue<URI> result = new ArrayDeque<>();
-		
+
 		if( file != null )
 			result.addAll( file.allUris());
 
@@ -308,22 +308,21 @@ public class JavaDirectory implements Directory {
 				.map(FileCounts::uri)
 				.limit(MAX_SIZE)
 				.forEach( result::add );
-		
+
 		while( result.size() < MAX_SIZE )
 			result.add( result.peek() );
-		
+
 		Log.info("Candidate files servers: " + result+ "\n");
 		return result;
 	}
-	
+
 	public FileCounts getFileCounts( URI uri, boolean create ) {
 		if( create )
 			return fileCounts.computeIfAbsent(uri,  FileCounts::new);
 		else
 			return fileCounts.getOrDefault( uri, new FileCounts(uri) );
 	}
-	
-	
+
 	public static record ExtendedFileInfo(List<URI> allUris, String fileId, FileInfo info) {
 	}
 
@@ -342,9 +341,9 @@ public class JavaDirectory implements Directory {
 		static int ascending(FileCounts a, FileCounts b) {
 			return Long.compare( a.numFiles().get(), b.numFiles().get());
 		}
-	}	
-	
-	static record UserInfo(String userId, String password) {		
+	}
+
+	static record UserInfo(String userId, String password) {
 	}
 
 	public String createToken(String fileId) {

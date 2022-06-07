@@ -11,10 +11,7 @@ import util.JSON;
 import util.Token;
 
 import java.net.URI;
-import java.util.ArrayDeque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import static java.lang.System.currentTimeMillis;
 import static tp1.api.service.java.Result.ErrorCode.BAD_REQUEST;
@@ -89,11 +86,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
 
             Result<Void> result = null;
             List<URI> uris = new LinkedList<>();
-            for (var uri :  orderCandidateFileServers(file)) {
-                Log.info("!!!!!!!!!!!!!!!!!!!!!!!!URIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + uri);//COLOCAR FORMA DE PARAR CICLO APOS TER ESCRITO EM N-1 SERVIDORES
+            for (var uri :  orderCandidateFileServers(file)) {//COLOCAR FORMA DE PARAR CICLO APOS TER ESCRITO EM N-1 SERVIDORES
                 result = FilesClients.get(uri).writeFile(fileId, data, createToken(fileId));
                 if (result.isOK()){
-                    Log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!Entrouuuuu!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     gotRequest = true;
                     uris.add(uri);
                     info.setOwner(userId);
@@ -111,8 +106,14 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
                 for(URI uri : file.allUris)
                     getFileCounts(uri, true).numFiles().incrementAndGet();
             }*/
+            //Log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + file.toString());
 
-            KafkaEvent eventInfo = new KafkaEvent(filename, userId, null, file);
+            Map<String, String> eventInfo = new HashMap<>();
+            eventInfo.put("filename", filename);
+            eventInfo.put("userId",userId);
+            eventInfo.put("fileId",fileId);
+            eventInfo.put("uris", JSON.encode(uris.toArray()));
+            eventInfo.put("info", JSON.encode(info));
 
             toe.publish(write, JSON.encode(eventInfo));
 
@@ -135,7 +136,7 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
         //}
     }
 
-    public String writeFileEvent(String filename, String userId, ExtendedFileInfo extFileInfo /*, ExtendedFileInfo record*/) {//TODO REMOVER LISTA DE URIS
+    public Result<Void> writeFileEvent(String filename, String userId, ExtendedFileInfo extFileInfo /*, ExtendedFileInfo record*/) {//TODO REMOVER LISTA DE URIS
 
         var uf = super.userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
 
@@ -143,14 +144,15 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
             var fileId = fileId(filename, userId);
             var file = files.get(fileId);
 
-            files.put(fileId, extFileInfo);
+            files.put(fileId, file = extFileInfo);
+            Log.info("FICHEIRO COLOCADO COM SUCESSO!!!!!!!!!!!!!!!");
 
             if( uf.owned().add(fileId)){
                 for(URI uri : file.allUris())
                     getFileCounts(uri, true).numFiles().incrementAndGet();
             }
         }
-        return null;
+        return ok();
     }
 
     public String deleteFileEvent(String filename, String userId) {

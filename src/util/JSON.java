@@ -9,7 +9,7 @@ final public class JSON {
     private static final Gson gson = new Gson();
 
     synchronized public static final String encode(Object obj) {
-        return gson.toJson(obj);
+            return gson.toJson(obj);
     }
 
     synchronized public static final <T> T decode(String json, Class<T> classOf) {

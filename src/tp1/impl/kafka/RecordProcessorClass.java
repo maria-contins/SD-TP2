@@ -1,6 +1,7 @@
 package tp1.impl.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import tp1.api.FileInfo;
 import tp1.api.service.java.DirectoryRep;
 import tp1.impl.kafka.sync.SyncPoint;
 import tp1.impl.servers.common.JavaDirectory;
@@ -8,10 +9,13 @@ import tp1.impl.servers.common.JavaRepDirectory;
 import tp1.impl.servers.rest.DirectoryRepResources;
 import util.JSON;
 
+import java.io.File;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
+import java.util.logging.Logger;
 
 public class RecordProcessorClass implements RecordProcessor{
 
@@ -22,6 +26,8 @@ public class RecordProcessorClass implements RecordProcessor{
 
     private final JavaRepDirectory repDir;
 
+    final static Logger Log = Logger.getLogger(RecordProcessorClass.class.getName());
+
     public RecordProcessorClass(JavaRepDirectory repDir){
         this.repDir = repDir;
     }
@@ -29,29 +35,32 @@ public class RecordProcessorClass implements RecordProcessor{
 
     @Override
     public void onReceive(ConsumerRecord<String, String> r) {
-        KafkaEvent info = JSON.decode(r.value(), KafkaEvent.class);
-
-        String filename = info.getFilename();
-        String userId = info.getUserID();
+        Map<String, String> eventInfo = JSON.decode(r.value());
+        String filename = eventInfo.get("filename");
+        String userId = eventInfo.get("userId");
 
         String recordKey = r.key();
 
         switch(recordKey){
             case(OP_WRITE):
+                String fileId = eventInfo.get("fileId");
+                URI[] uris = JSON.decode(eventInfo.get("uris"), URI[].class);
+                FileInfo info = JSON.decode(eventInfo.get("info"),FileInfo.class);
 
-                JavaDirectory.ExtendedFileInfo fileInfo = info.getFile();
-                SyncPoint.getInstance().setResult(r.offset(), repDir.writeFileEvent(filename,userId, fileInfo));
+                var file = new JavaDirectory.ExtendedFileInfo(List.of(uris), fileId, info);
+
+                SyncPoint.getInstance().setResult(r.offset(), repDir.writeFileEvent(filename,userId, file));
                 break;
             case(OP_DELETE):
                 SyncPoint.getInstance().setResult(r.offset(), repDir.deleteFileEvent(filename,userId));
                 break;
             case(OP_SHARE):
-                String userIdShare = info.getUserShareId();
-                SyncPoint.getInstance().setResult(r.offset(), repDir.shareFileEvent(filename,userId, userIdShare));
+                //String userIdShare = info.getUserShareId();
+                //SyncPoint.getInstance().setResult(r.offset(), repDir.shareFileEvent(filename,userId, userIdShare));
                 break;
             case(OP_UNSHARE):
-                String userIdUnshare = info.getUserShareId();
-                SyncPoint.getInstance().setResult(r.offset(), repDir.unshareFile(filename,userId, userIdUnshare));
+                //String userIdUnshare = info.getUserShareId();
+                //SyncPoint.getInstance().setResult(r.offset(), repDir.unshareFile(filename,userId, userIdUnshare));
                 break;
         }
     }
