@@ -89,7 +89,7 @@ public class JavaDirectory implements Directory {
 					info.setFileURL(String.format("%s/files/%s", uri, fileId));
 				} else
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
-				if (count == FilesClients.all().size()-1)
+				if(count == FilesClients.all().size()-1)
 					break;
 			}
 			System.out.println(uris);
@@ -193,7 +193,6 @@ public class JavaDirectory implements Directory {
 
 	@Override
 	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
-
 
 		if (badParam(filename))
 			return error(BAD_REQUEST);

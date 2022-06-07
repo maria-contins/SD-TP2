@@ -85,10 +85,12 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
             var info = file != null ? file.info() : new FileInfo();
 
             Result<Void> result = null;
+            int count = 0;
             List<URI> uris = new LinkedList<>();
             for (var uri :  orderCandidateFileServers(file)) {//COLOCAR FORMA DE PARAR CICLO APOS TER ESCRITO EM N-1 SERVIDORES
                 result = FilesClients.get(uri).writeFile(fileId, data, createToken(fileId));
                 if (result.isOK()){
+                    count++;
                     gotRequest = true;
                     uris.add(uri);
                     info.setOwner(userId);
@@ -96,6 +98,8 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
                     info.setFileURL(String.format("%s/files/%s", uri, fileId));
                 } else
                     Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
+                if(count == FilesClients.all().size()-1)
+                    break;
             }
             System.out.println(uris);
             //assert result != null;

@@ -56,7 +56,6 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
         }
 
         toe.publish(OP_WRITE, JSON.encode(finalArray));*/
-
         return result;
     }
 
