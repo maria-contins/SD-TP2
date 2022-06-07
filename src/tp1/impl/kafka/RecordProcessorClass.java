@@ -36,14 +36,14 @@ public class RecordProcessorClass implements RecordProcessor{
     @Override
     public void onReceive(ConsumerRecord<String, String> r) {
         Map<String, String> eventInfo = JSON.decode(r.value());
-        String filename = eventInfo.get("filename");
-        String userId = eventInfo.get("userId");
+        String filename = JSON.decode(eventInfo.get("filename"), String.class);
+        String userId = JSON.decode(eventInfo.get("userId"), String.class);
 
         String recordKey = r.key();
 
         switch(recordKey){
             case(OP_WRITE):
-                String fileId = eventInfo.get("fileId");
+                String fileId = JSON.decode(eventInfo.get("fileId"), String.class);
                 URI[] uris = JSON.decode(eventInfo.get("uris"), URI[].class);
                 FileInfo info = JSON.decode(eventInfo.get("info"),FileInfo.class);
 

@@ -80,7 +80,7 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
         /*var uf = userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
         synchronized (uf) {*/
             var fileId = fileId(filename, userId);
-            var file = files.get(fileId);
+            var file = super.files.get(fileId);
 
             var info = file != null ? file.info() : new FileInfo();
 
@@ -100,7 +100,7 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
             System.out.println(uris);
             //assert result != null;
 
-            files.put(fileId, file = new ExtendedFileInfo(uris, fileId, info));
+            super.files.put(fileId, file = new ExtendedFileInfo(uris, fileId, info));
 
             /*if( uf.owned().add(fileId)){
                 for(URI uri : file.allUris)
@@ -109,9 +109,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
             //Log.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + file.toString());
 
             Map<String, String> eventInfo = new HashMap<>();
-            eventInfo.put("filename", filename);
-            eventInfo.put("userId",userId);
-            eventInfo.put("fileId",fileId);
+            eventInfo.put("filename", JSON.encode(filename));
+            eventInfo.put("userId",JSON.encode(userId));
+            eventInfo.put("fileId",JSON.encode(fileId));
             eventInfo.put("uris", JSON.encode(uris.toArray()));
             eventInfo.put("info", JSON.encode(info));
 
@@ -142,9 +142,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
 
         synchronized (uf) {
             var fileId = fileId(filename, userId);
-            var file = files.get(fileId);
+            var file = super.files.get(fileId);
 
-            files.put(fileId, file = extFileInfo);
+            super.files.put(fileId, file = extFileInfo);
             Log.info("FICHEIRO COLOCADO COM SUCESSO!!!!!!!!!!!!!!!");
 
             if( uf.owned().add(fileId)){
@@ -159,9 +159,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
 
         var fileId = fileId(filename, userId);
 
-        var uf = userFiles.getOrDefault(userId, new UserFiles());
+        var uf = super.userFiles.getOrDefault(userId, new UserFiles());
         synchronized (uf) {
-            var info = files.remove(fileId);
+            var info = super.files.remove(fileId);
             uf.owned().remove(fileId);
         }
 
@@ -173,9 +173,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
     public String shareFileEvent(String filename, String userId, String userIdShare){
 
         var fileId = fileId(filename, userId);
-        var file = files.get(fileId);
+        var file = super.files.get(fileId);
 
-        var uf = userFiles.computeIfAbsent(userIdShare, (k) -> new UserFiles());
+        var uf = super.userFiles.computeIfAbsent(userIdShare, (k) -> new UserFiles());
         synchronized (uf) {
             uf.shared().add(fileId);
             file.info().getSharedWith().add(userIdShare);
@@ -187,9 +187,9 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
     public String unshareFile(String filename, String userId, String userIdShare){
 
         var fileId = fileId(filename, userId);
-        var file = files.get(fileId);
+        var file = super.files.get(fileId);
 
-        var uf = userFiles.computeIfAbsent(userIdShare, (k) -> new UserFiles());
+        var uf = super.userFiles.computeIfAbsent(userIdShare, (k) -> new UserFiles());
         synchronized (uf) {
             uf.shared().remove(fileId);
             file.info().getSharedWith().remove(userIdShare);
