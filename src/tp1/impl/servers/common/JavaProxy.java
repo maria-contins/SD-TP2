@@ -58,7 +58,7 @@ public class JavaProxy implements Files {
         getFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
         getFile.addHeader("Dropbox-API-Arg", json.toJson(new GetFile(ROOT_FILES + fileId)));
 
-        service.signRequest(accessToken, getFile);
+        service.signRequest(accessToken, getFile);   
         int retry = 0;
 
         Response r = null;
