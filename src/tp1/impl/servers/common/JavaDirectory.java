@@ -76,10 +76,12 @@ public class JavaDirectory implements Directory {
 			var info = file != null ? file.info() : new FileInfo();
 
 			Result<Void> result = null;
+			int count = 0;
 			List<URI> uris = new LinkedList<>();
 			for (var uri :  orderCandidateFileServers(file)) {
 				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
 				if (result.isOK()){
+					count++;
 					gotRequest = true;
 					uris.add(uri);
 					info.setOwner(userId);
@@ -87,6 +89,8 @@ public class JavaDirectory implements Directory {
 					info.setFileURL(String.format("%s/files/%s", uri, fileId));
 				} else
 					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
+				if (count == FilesClients.all().size()-1)
+					break;
 			}
 			System.out.println(uris);
 			//assert result != null;
@@ -189,6 +193,7 @@ public class JavaDirectory implements Directory {
 
 	@Override
 	public Result<byte[]> getFile(String filename, String userId, String accUserId, String password) {
+
 
 		if (badParam(filename))
 			return error(BAD_REQUEST);

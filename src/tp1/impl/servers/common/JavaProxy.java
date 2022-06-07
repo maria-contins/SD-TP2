@@ -15,6 +15,11 @@ import tp1.impl.servers.rest.proxyMsgs.DeleteFolderOrFileArgs;
 import tp1.impl.servers.rest.proxyMsgs.GetFile;
 import tp1.impl.servers.rest.proxyMsgs.UploadArgs;
 import util.Sleep;
+import util.Token;
+
+import static java.lang.System.currentTimeMillis;
+import static tp1.api.service.java.Result.ErrorCode.FORBIDDEN;
+import static tp1.api.service.java.Result.error;
 
 
 public class JavaProxy implements Files {
@@ -22,7 +27,7 @@ public class JavaProxy implements Files {
     //Dropbox API stuff
     private static final String apiKey = "hco8hk1gqbs4lle";
     private static final String apiSecret = "eorx05nr0ghxefn";
-    private static final String accessTokenStr = "sl.BJCKvoAC5FPcNy0HZ9bQrHbrX8fApUmBIHi_G0dFtj2WO2TtyY50WEx0QgrVoFSSiqN8SrWg8g9cpmGPiHQ4oJtpTutsX80kz9pkTjzXL4xrzN7ziZOvghGQbkB9WaXowqTxmOLdCVqZ";
+    private static final String accessTokenStr = "sl.BJHkqVR0ZXZb2-EaAEcyayF8FisMdo1DmZTc9xKYUmVUOtD-_FrSYFbsNdKX7-iW4ClSajUvZpVQKVGFyS-W9idBfT8_kGg7NKQFNaSs_jtpMg364LpvGHHYVuNY23cAAEzAwu-Ydj4H";
     //API Request Links
     private static final String DELETE_FOLDER_OR_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";
     private static final String GET_FILE_URL = "https://content.dropboxapi.com/2/files/download";
@@ -54,6 +59,10 @@ public class JavaProxy implements Files {
 
     @Override
     public Result<byte[]> getFile(String fileId, String token) {
+
+        if(invalidTokenDir(token, fileId))
+            return error(FORBIDDEN);
+
         OAuthRequest getFile = new OAuthRequest(Verb.POST, GET_FILE_URL);
         getFile.addHeader("Content-Type", OCTET_STREAM_CONTENT_TYPE);
         getFile.addHeader("Dropbox-API-Arg", json.toJson(new GetFile(ROOT_FILES + fileId)));
@@ -61,19 +70,19 @@ public class JavaProxy implements Files {
         service.signRequest(accessToken, getFile);
         int retry = 0;
 
-        Response r = null;
-        while (retry < RETRIES && r == null) {
+        Response r;
+        while (retry < RETRIES) {
             retry++;
             try {
                 r = service.execute(getFile);
-                if (r.getCode() != HTTP_SUCCESS)
-                    throw new RuntimeException(String.format("Failed to get File: %s, Status: %d, \nReason: %s\n",
-                            r.getCode(), r.getBody()));
                 if (r.getCode() == 200)
                     return Result.ok(r.getStream().readAllBytes());
                 else if (r.getCode() == 429) {
                     retry++;
                     Sleep.seconds(3);
+                } else {
+                    throw new RuntimeException(String.format("Failed to get File: %s, Status: %d, \nReason: %s\n",
+                            r.getCode(), r.getBody()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -84,6 +93,9 @@ public class JavaProxy implements Files {
 
     @Override
     public Result<Void> deleteFile(String fileId, String token) {
+        if(invalidTokenDir(token, fileId))
+            return error(FORBIDDEN);
+
         String[] tokens = fileId.split(DELIMITER);
         String userId = tokens[0];
 
@@ -95,6 +107,9 @@ public class JavaProxy implements Files {
 
     @Override
     public Result<Void> writeFile(String fileId, byte[] data, String token) {
+        if(invalidTokenDir(token, fileId))
+            return error(FORBIDDEN);
+
         String[] tokens = fileId.split(DELIMITER);
         String userId = tokens[0];
 
@@ -108,6 +123,9 @@ public class JavaProxy implements Files {
 
     @Override
     public Result<Void> deleteUserFiles(String userId, String token) { // TODO
+        if(invalidTokenUsers(token))
+            return error(FORBIDDEN);
+
         delete(ROOT_USERS + userId);
 
         return Result.ok();
@@ -194,6 +212,34 @@ public class JavaProxy implements Files {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean invalidTokenDir(String token, String fileId){
+        String[] tokenInfo = token.split("\\?\\?");
+
+        String time = tokenInfo[1];
+        String mySecret = Token.get();
+
+        if (Long.parseLong(time) < currentTimeMillis())
+            return true;
+
+        long hashed = (fileId + time + mySecret).hashCode();
+
+        return hashed != Long.parseLong(tokenInfo[2]);
+    }
+
+    private boolean invalidTokenUsers(String token) {
+        String[] tokenInfo = token.split("\\?\\?");
+
+        String time = tokenInfo[0];
+        String mySecret = Token.get();
+
+        if (Long.parseLong(time) < currentTimeMillis())
+            return true;
+
+        long hashed = (time + mySecret).hashCode();
+
+        return hashed != Long.parseLong(tokenInfo[1]);
     }
 
 }

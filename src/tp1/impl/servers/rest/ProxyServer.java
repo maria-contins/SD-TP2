@@ -32,23 +32,21 @@ public class ProxyServer extends AbstractRestServer{
 
         Debug.setLogLevel( Level.INFO, Debug.TP1);
 
-        Token.set( args.length == 0 ? "" : args[0] );
+        Token.set( args.length == 0 ? "" : args[1] );
 
         String flag = args[0];
         JavaProxy dropbox = new JavaProxy();
 
         if(flag.equals("true")){
             dropbox.delete("/Main");
+            boolean createMainFolder = dropbox.createFolder("/Main");
+            dropbox.createFolder("/Main/Files");
+            dropbox.createFolder("/Main/UserFiles");
+            if (createMainFolder)
+                System.out.println("Directory created successfuly.");
+            else
+                System.out.println("Failed to create directory");
         }
-
-        boolean createMainFolder = dropbox.createFolder("/Main");
-        dropbox.createFolder("/Main/Files");
-        dropbox.createFolder("/Main/UserFiles");
-        if (createMainFolder)
-            System.out.println("Directory created successfuly.");
-        else
-            System.out.println("Failed to create directory");
-
 
         new ProxyServer().start();
     }

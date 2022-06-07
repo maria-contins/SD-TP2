@@ -144,10 +144,13 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
             var fileId = fileId(filename, userId);
             var file = super.files.get(fileId);
 
+            var info = file != null ? file.info() : new FileInfo();
+
             super.files.put(fileId, file = extFileInfo);
+
             Log.info("FICHEIRO COLOCADO COM SUCESSO!!!!!!!!!!!!!!!");
 
-            if( uf.owned().add(fileId)){
+            if( uf.owned().add(fileId))  {
                 for(URI uri : file.allUris())
                     getFileCounts(uri, true).numFiles().incrementAndGet();
             }
