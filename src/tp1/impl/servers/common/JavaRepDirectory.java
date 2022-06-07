@@ -141,19 +141,19 @@ public class JavaRepDirectory extends JavaDirectory implements DirectoryRep {
         var uf = super.userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
 
         synchronized (uf) {
-            var fileId = fileId(filename, userId);
-            var file = super.files.get(fileId);
+            String fileId = fileId(filename, userId);
 
-            var info = file != null ? file.info() : new FileInfo();
 
-            super.files.put(fileId, file = extFileInfo);
+            ExtendedFileInfo ef =  super.files.put(fileId, extFileInfo);
 
-            Log.info("FICHEIRO COLOCADO COM SUCESSO!!!!!!!!!!!!!!!");
+            Log.info("written " + ((ef == null) ? "new" : "old") +  " -  FICHEIRO " + fileId + " COLOCADO COM SUCESSO = " + extFileInfo);
 
-            if( uf.owned().add(fileId))  {
-                for(URI uri : file.allUris())
+            if( uf.owned().add(fileId)){
+                for(URI uri : extFileInfo.allUris())
                     getFileCounts(uri, true).numFiles().incrementAndGet();
             }
+
+            Log.info("MAP: " + super.files.toString());
         }
         return ok();
     }

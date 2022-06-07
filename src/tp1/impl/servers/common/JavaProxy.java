@@ -7,6 +7,7 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.Gson;
+import org.apache.kafka.common.config.LogLevelConfig;
 import org.pac4j.scribe.builder.api.DropboxApi20;
 import tp1.api.service.java.Files;
 import tp1.api.service.java.Result;
@@ -88,7 +89,7 @@ public class JavaProxy implements Files {
                 e.printStackTrace();
             }
         }
-        return null;
+        return Result.error(Result.ErrorCode.NOT_FOUND);
     }
 
     @Override

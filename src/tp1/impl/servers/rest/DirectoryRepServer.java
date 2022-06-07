@@ -2,7 +2,6 @@ package tp1.impl.servers.rest;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import tp1.api.service.java.Directory;
-import tp1.impl.kafka.sync.SyncPoint;
 import tp1.impl.servers.rest.util.GenericExceptionMapper;
 import util.Debug;
 import util.Token;
