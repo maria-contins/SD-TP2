@@ -79,7 +79,7 @@ public class JavaDirectory implements Directory {
 			int count = 0;
 			List<URI> uris = new LinkedList<>();
 			for (var uri :  orderCandidateFileServers(file)) {
-				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
+				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/createToken(fileId));
 				if (result.isOK()){
 					count++;
 					gotRequest = true;
@@ -218,7 +218,7 @@ public class JavaDirectory implements Directory {
 		else
 			result = FilesClients.get(fileURI).getFile(fileId, createToken(fileId));
 
-		if(!result.isOK()){
+		if(!result.isOK() && (result.error() != ErrorCode.REDIRECT)) {
 			URI first = files.get(fileId).allUris.remove(0);
 			files.get(fileId).allUris.add(first);
 		}  //TODO DISCOVERY TER UM MAPA,
