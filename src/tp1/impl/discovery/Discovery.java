@@ -9,10 +9,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -34,6 +31,8 @@ public class Discovery {
 	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2262);
 
 	final Map<String, Set<URI>> discoveries = new ConcurrentHashMap<>();
+
+	private Map<URI, Long> urisMap = new HashMap<>();
 	
 	static Discovery instance;
 	
@@ -99,6 +98,10 @@ public class Discovery {
 						var uri = URI.create( tokens[1]);
 						
 						discoveries.computeIfAbsent(name, (k) -> ConcurrentHashMap.newKeySet()).add( uri );
+						//TOD0 NOVO CODIGO
+						urisMap.put(uri,System.currentTimeMillis());
+
+
 					}
 				} catch (IOException e) {
 					Sleep.ms(DISCOVERY_PERIOD);
@@ -133,5 +136,18 @@ public class Discovery {
 				x.printStackTrace();
 			}
 		}
-	}	
+	}
+
+	public URI function(List<URI> listURI){
+		URI availableServer = null;
+		for(URI uri : listURI){
+			var  value = urisMap.get(uri);
+
+			if(value + 10000 > System.currentTimeMillis()){
+				availableServer = uri;
+				break;
+			}
+		}
+		return availableServer;
+	}
 }

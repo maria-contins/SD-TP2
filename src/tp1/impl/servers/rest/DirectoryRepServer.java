@@ -10,13 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DirectoryRepServer extends AbstractRestServer {
-    public static final int PORT = 4567;
+    public static final int PORT = 5109;
 
     private static Logger Log = Logger.getLogger(DirectoryRepServer.class.getName());
 
     DirectoryRepServer() {
         super(Log, Directory.SERVICE_NAME, PORT);
-        SyncPoint.getInstance();
+        //SyncPoint.getInstance();
     }
 
     @Override

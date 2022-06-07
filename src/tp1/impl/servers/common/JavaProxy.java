@@ -22,7 +22,7 @@ public class JavaProxy implements Files {
     //Dropbox API stuff
     private static final String apiKey = "hco8hk1gqbs4lle";
     private static final String apiSecret = "eorx05nr0ghxefn";
-    private static final String accessTokenStr = "sl.BI7wNZevyRJhwMWphylKy04nQct3CvHdlk6lF3_ipv4weZieJVBq0qZo--YAsSMmH2FiAtRXx96ReLQ5B_lHBG9OgqpwMc4KaGR5eayx-RJqxqEXhAPyi-F2QtCCxVj2vc_6BQBADIHO";
+    private static final String accessTokenStr = "sl.BJCKvoAC5FPcNy0HZ9bQrHbrX8fApUmBIHi_G0dFtj2WO2TtyY50WEx0QgrVoFSSiqN8SrWg8g9cpmGPiHQ4oJtpTutsX80kz9pkTjzXL4xrzN7ziZOvghGQbkB9WaXowqTxmOLdCVqZ";
     //API Request Links
     private static final String DELETE_FOLDER_OR_FILE_URL = "https://api.dropboxapi.com/2/files/delete_v2";
     private static final String GET_FILE_URL = "https://content.dropboxapi.com/2/files/download";

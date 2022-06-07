@@ -1,12 +1,17 @@
 package tp1.impl.servers.rest;
 
 import tp1.api.FileInfo;
-import tp1.api.service.java.Directory;
+
+import java.net.URI;
+import java.util.Arrays;
 import tp1.api.service.java.DirectoryRep;
 import tp1.api.service.java.Result;
 import tp1.api.service.rest.RestDirectory;
+import tp1.impl.kafka.KafkaEvent;
+import tp1.impl.kafka.TotalOrderExecutor;
 import tp1.impl.servers.common.JavaDirectory;
 import tp1.impl.servers.common.JavaRepDirectory;
+import util.JSON;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,13 +21,19 @@ import static tp1.impl.clients.Clients.FilesClients;
 public class DirectoryRepResources extends RestResource implements RestDirectory {
     private static Logger Log = Logger.getLogger(DirectoryRepResources.class.getName());
 
-    private static final String REST = "/rest/";
-    private static final String FROM_BEGINNING = "earliest";
+    private static final String OP_WRITE = "write";
+    private static final String OP_DELETE = "delete";
+    private static final String OP_SHARE = "share";
+    private static final String OP_UNSHARE = "unshare";
 
-    final DirectoryRep impl;
+    private static final String REST = "/rest/";
+
+    final JavaRepDirectory impl;
+    final TotalOrderExecutor toe;
 
     public DirectoryRepResources() {
         impl = new JavaRepDirectory();
+        toe = new TotalOrderExecutor(impl);
     }
 
     public FileInfo writeFile(String filename, byte[] data, String userId, String password) {
@@ -30,9 +41,21 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
                 filename, data.length, userId, password));
 
 
-        FileInfo result = super.resultOrThrow(impl.writeFile(filename, data, userId, password));
+        FileInfo result = super.resultOrThrow(impl.writeFile(filename, data, userId, password, toe , OP_WRITE));
 
-        //impl.getPublisher().publish();
+        /*List<URI> uris = result.getUris();
+
+        String[] operationInfo = {filename, userId, String.valueOf(result.getUris().size())};
+        int len1 = operationInfo.length;
+        int len2 = uris.size();
+        String[] finalArray = new String[len1 + len2];
+        System.arraycopy(operationInfo,0,finalArray,0,len1);
+
+        for(URI uri : uris){
+            finalArray[len1++] = uri.toString();
+        }
+
+        toe.publish(OP_WRITE, JSON.encode(finalArray));*/
 
         return result;
     }
@@ -43,6 +66,10 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
                 password));
 
         super.resultOrThrow(impl.deleteFile(filename, userId, password));
+
+        String[] operationInfo = {filename, userId};
+
+        toe.publish(OP_DELETE, JSON.encode(operationInfo));
     }
 
     @Override
@@ -51,6 +78,10 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
                 userId, userIdShare, password));
 
         super.resultOrThrow(impl.shareFile(filename, userId, userIdShare, password));
+
+        String[] operationInfo = {filename, userId, userIdShare};
+
+        toe.publish(OP_SHARE, JSON.encode(operationInfo));
     }
 
     @Override
@@ -59,6 +90,10 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
                 filename, userId, userIdShare, password));
 
         super.resultOrThrow(impl.unshareFile(filename, userId, userIdShare, password));
+
+        String[] operationInfo = {filename, userId, userIdShare};
+
+        toe.publish(OP_UNSHARE, JSON.encode(operationInfo));
     }
 
     @Override
@@ -72,8 +107,8 @@ public class DirectoryRepResources extends RestResource implements RestDirectory
             if (!location.contains(REST))
                 res = FilesClients.get(location).getFile(JavaDirectory.fileId(filename, userId), password);
         }
-        return super.resultOrThrow(res);
 
+        return super.resultOrThrow(res);
     }
 
     @Override

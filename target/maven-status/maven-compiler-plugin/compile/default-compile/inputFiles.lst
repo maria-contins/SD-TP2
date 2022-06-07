@@ -9,6 +9,7 @@ D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\soap\SoapFilesClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\examples\KafkaReceiver.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\AbstractRestServer.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\rest\RestDirectoryClient.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\DirectoryRepServer.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\ListFolderReturn.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\DirectoryResources.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\ProxyServer.java
@@ -30,6 +31,7 @@ D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\soap\SoapUsersClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\soap\DirectorySoapServer.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\User.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\java\Users.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\KafkaEvent.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\common\RetryUsersClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\discovery\Discovery.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\common\JavaDirectory.java
@@ -39,6 +41,7 @@ D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\rest\RestUsersClient.java
 D:\ProjetosProgramacao\SD-TP2\src\util\Token.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\rest\RestFilesClient.java
 D:\ProjetosProgramacao\SD-TP2\src\util\IP.java
+D:\ProjetosProgramacao\SD-TP2\src\util\JSON.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\soap\DirectoryException.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\util\CustomLoggingFilter.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\common\RetryClient.java
@@ -46,9 +49,12 @@ D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\KafkaPublisher.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\common\JavaProxy.java
 D:\ProjetosProgramacao\SD-TP2\src\util\Debug.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\java\Directory.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\java\DirectoryRep.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\rest\RestClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\soap\FilesException.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\RecordProcessorClass.java
 D:\ProjetosProgramacao\SD-TP2\src\util\InsecureHostnameVerifier.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\DirectoryRepResources.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\KafkaSubscriber.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\ListFolderContinueArgs.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\UsersResources.java
@@ -67,6 +73,7 @@ D:\ProjetosProgramacao\SD-TP2\src\util\IO.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\soap\FilesSoapServer.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\soap\SoapDirectory.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\RestResource.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\TotalOrderExecutor.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\soap\SoapClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\soap\AbstractSoapServer.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\api\service\soap\SoapUsers.java
@@ -75,4 +82,5 @@ D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\rest\proxyMsgs\GetFile.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\common\RetryDirectoryClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\clients\soap\SoapDirectoryClient.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\common\JavaFiles.java
+D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\servers\common\JavaRepDirectory.java
 D:\ProjetosProgramacao\SD-TP2\src\tp1\impl\kafka\RecordProcessor.java

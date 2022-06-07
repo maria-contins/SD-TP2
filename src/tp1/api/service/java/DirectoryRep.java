@@ -5,6 +5,4 @@ import tp1.impl.kafka.KafkaSubscriber;
 
 public interface DirectoryRep extends Directory{
 
-    KafkaSubscriber getSubscriber();
-    KafkaPublisher getPublisher();
 }

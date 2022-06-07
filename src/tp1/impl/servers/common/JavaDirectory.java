@@ -30,6 +30,7 @@ import tp1.api.User;
 import tp1.api.service.java.Directory;
 import tp1.api.service.java.Result;
 import tp1.api.service.java.Result.ErrorCode;
+import tp1.impl.discovery.Discovery;
 import util.Token;
 
 public class JavaDirectory implements Directory {
@@ -48,14 +49,14 @@ public class JavaDirectory implements Directory {
 						return res;
 				}
 			});
-	
+
 	final static Logger Log = Logger.getLogger(JavaDirectory.class.getName());
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
 	final Map<String, ExtendedFileInfo> files = new ConcurrentHashMap<>();
 	final Map<String, UserFiles> userFiles = new ConcurrentHashMap<>();
 	final Map<URI, FileCounts> fileCounts = new ConcurrentHashMap<>();
-	
+
 	@Override
 	public Result<FileInfo> writeFile(String filename, byte[] data, String userId, String password) {
 
@@ -66,6 +67,7 @@ public class JavaDirectory implements Directory {
 		if (!user.isOK())
 			return error(user.error());
 
+		boolean gotRequest = false;
 		var uf = userFiles.computeIfAbsent(userId, (k) -> new UserFiles());
 		synchronized (uf) {
 			var fileId = fileId(filename, userId);
@@ -77,21 +79,27 @@ public class JavaDirectory implements Directory {
 			List<URI> uris = new LinkedList<>();
 			for (var uri :  orderCandidateFileServers(file)) {
 				result = FilesClients.get(uri).writeFile(fileId, data, /*Token.get()*/ createToken(fileId));
-				if (result.isOK())
+				if (result.isOK()){
+					gotRequest = true;
 					uris.add(uri);
+					info.setOwner(userId);
+					info.setFilename(filename);
+					info.setFileURL(String.format("%s/files/%s", uri, fileId));
+				} else
+					Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uri, result));
 			}
 			System.out.println(uris);
-			assert result != null;
-			if (result.isOK()) {
-				info.setOwner(userId);
-				info.setFilename(filename);
-				info.setFileURL(String.format("%s/files/%s", uris.get(0), fileId));
-				files.put(fileId, file = new ExtendedFileInfo(uris.get(0), uris, fileId, info));
-				if( uf.owned().add(fileId))
-					getFileCounts(file.uri(), true).numFiles().incrementAndGet();
+			//assert result != null;
+
+			files.put(fileId, file = new ExtendedFileInfo(uris, fileId, info));
+
+			if( uf.owned().add(fileId)){
+				for(URI uri : file.allUris)
+					getFileCounts(uri, true).numFiles().incrementAndGet();
+			}
+
+			if(gotRequest)
 				return ok(file.info());
-			} else
-				Log.info(String.format("Files.writeFile(...) to %s failed with: %s \n", uris.get(0), result));
 
 			return error(BAD_REQUEST);
 		}
@@ -120,10 +128,13 @@ public class JavaDirectory implements Directory {
 
 			executor.execute(() -> {
 				this.removeSharesOfFile(info);
-				FilesClients.get(file.uri()).deleteFile(fileId, /*password,*/ createToken(fileId));
+				for(URI uri : file.allUris) {
+					FilesClients.get(uri).deleteFile(fileId, /*password,*/ createToken(fileId));
+				}
+
 			});
-			
-			getFileCounts(info.uri(), false).numFiles().decrementAndGet();
+			for(URI uri : file.allUris)  //TODO AQUI ANTES ERA FILE.INFO OU SEJA O URL TALVEZ O URI NAO É SUFICIENTE
+				getFileCounts(uri, false).numFiles().decrementAndGet();
 		}
 		return ok();
 	}
@@ -206,7 +217,17 @@ public class JavaDirectory implements Directory {
 		if(!result.isOK()){
 			URI first = files.get(fileId).allUris.remove(0);
 			files.get(fileId).allUris.add(first);
-		}
+		}  //TODO DISCOVERY TER UM MAPA,
+
+
+		/*TODO CODIGO REDIRECT APRIMORADO IMPLEMENTAR NO FUTURO!
+		Discovery inst = Discovery.getInstance();
+		URI availableServer = inst.function(files.get(fileId).allUris);
+
+		if (fileURI.toString().contains("rest"))
+			result = redirect((String.format("%s/files/%s", fileURI, fileId) + "?token=" + createToken(fileId)));
+		else
+			result = FilesClients.get(fileURI).getFile(fileId, createToken(fileId));*/
 
 		return result;
 	}
@@ -233,11 +254,11 @@ public class JavaDirectory implements Directory {
 		return userId + JavaFiles.DELIMITER + filename;
 	}
 
-	private static boolean badParam(String str) {
+	public static boolean badParam(String str) {
 		return str == null || str.length() == 0;
 	}
 
-	private Result<User> getUser(String userId, String password) {
+	public Result<User> getUser(String userId, String password) {
 		try {
 			return users.get( new UserInfo( userId, password));
 		} catch( Exception x ) {
@@ -258,7 +279,8 @@ public class JavaDirectory implements Directory {
 			for (var id : fileIds.owned()) {
 				var file = files.remove(id);
 				removeSharesOfFile(file);
-				getFileCounts(file.uri(), false).numFiles().decrementAndGet();
+				for(URI uri : file.allUris)
+					getFileCounts(uri, false).numFiles().decrementAndGet();
 			}
 		return ok();
 	}
@@ -269,14 +291,14 @@ public class JavaDirectory implements Directory {
 	}
 
 
-	private Queue<URI> orderCandidateFileServers(ExtendedFileInfo file) {
-		//int MAX_SIZE=3;
-		int MAX_SIZE= Math.max(FilesClients.all().size()-1, 1);
+	public Queue<URI> orderCandidateFileServers(ExtendedFileInfo file) {
+		int MAX_SIZE=3;
+		//int MAX_SIZE= Math.max(FilesClients.all().size()-1, 1);
 
 		Queue<URI> result = new ArrayDeque<>();
 		
 		if( file != null )
-			result.add( file.uri() );
+			result.addAll( file.allUris());
 
 		FilesClients.all()
 				.stream()
@@ -294,7 +316,7 @@ public class JavaDirectory implements Directory {
 		return result;
 	}
 	
-	private FileCounts getFileCounts( URI uri, boolean create ) {
+	public FileCounts getFileCounts( URI uri, boolean create ) {
 		if( create )
 			return fileCounts.computeIfAbsent(uri,  FileCounts::new);
 		else
@@ -302,7 +324,7 @@ public class JavaDirectory implements Directory {
 	}
 	
 	
-	static record ExtendedFileInfo(URI uri, List<URI> allUris, String fileId, FileInfo info) {
+	public static record ExtendedFileInfo(List<URI> allUris, String fileId, FileInfo info) {
 	}
 
 	static record UserFiles(Set<String> owned, Set<String> shared) {
@@ -325,7 +347,7 @@ public class JavaDirectory implements Directory {
 	static record UserInfo(String userId, String password) {		
 	}
 
-	private String createToken(String fileId) {
+	public String createToken(String fileId) {
 		String mySecret = Token.get();
 		long time = (currentTimeMillis()+10000);
 		String clear = fileId+"??"+time+"??" ;
